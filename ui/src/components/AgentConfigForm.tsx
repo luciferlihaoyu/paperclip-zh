@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { t } from "@/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   Agent,
@@ -150,35 +151,35 @@ function formatArgList(value: unknown): string {
 }
 
 const codexThinkingEffortOptions = [
-  { id: "", label: "Auto" },
-  { id: "minimal", label: "Minimal" },
-  { id: "low", label: "Low" },
-  { id: "medium", label: "Medium" },
-  { id: "high", label: "High" },
+  { id: "", label: t("components.agentConfigForm.auto") },
+  { id: "minimal", label: t("components.agentConfigForm.minimal") },
+  { id: "low", label: t("components.agentConfigForm.low") },
+  { id: "medium", label: t("components.agentConfigForm.medium") },
+  { id: "high", label: t("components.agentConfigForm.high") },
   { id: "xhigh", label: "X-High" },
 ] as const;
 
 const openCodeThinkingEffortOptions = [
-  { id: "", label: "Auto" },
-  { id: "minimal", label: "Minimal" },
-  { id: "low", label: "Low" },
-  { id: "medium", label: "Medium" },
-  { id: "high", label: "High" },
+  { id: "", label: t("components.agentConfigForm.auto") },
+  { id: "minimal", label: t("components.agentConfigForm.minimal") },
+  { id: "low", label: t("components.agentConfigForm.low") },
+  { id: "medium", label: t("components.agentConfigForm.medium") },
+  { id: "high", label: t("components.agentConfigForm.high") },
   { id: "xhigh", label: "X-High" },
-  { id: "max", label: "Max" },
+  { id: "max", label: t("components.agentConfigForm.max") },
 ] as const;
 
 const cursorModeOptions = [
-  { id: "", label: "Auto" },
-  { id: "plan", label: "Plan" },
-  { id: "ask", label: "Ask" },
+  { id: "", label: t("components.agentConfigForm.auto") },
+  { id: "plan", label: t("components.agentConfigForm.plan") },
+  { id: "ask", label: t("components.agentConfigForm.ask") },
 ] as const;
 
 const claudeThinkingEffortOptions = [
-  { id: "", label: "Auto" },
-  { id: "low", label: "Low" },
-  { id: "medium", label: "Medium" },
-  { id: "high", label: "High" },
+  { id: "", label: t("components.agentConfigForm.auto") },
+  { id: "low", label: t("components.agentConfigForm.low") },
+  { id: "medium", label: t("components.agentConfigForm.medium") },
+  { id: "high", label: t("components.agentConfigForm.high") },
 ] as const;
 
 const MAX_TURN_CONTINUATION_DEFAULT_MAX_ATTEMPTS = 2;
@@ -233,7 +234,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   });
   const createSecret = useMutation({
     mutationFn: (input: { name: string; value: string }) => {
-      if (!selectedCompanyId) throw new Error("Select a company to create secrets");
+      if (!selectedCompanyId) throw new Error(t("components.agentConfigForm.selectCompanySecrets"));
       return secretsApi.create(selectedCompanyId, input);
     },
     onSuccess: () => {
@@ -244,7 +245,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
 
   const uploadMarkdownImage = useMutation({
     mutationFn: async ({ file, namespace }: { file: File; namespace: string }) => {
-      if (!selectedCompanyId) throw new Error("Select a company to upload images");
+      if (!selectedCompanyId) throw new Error(t("components.agentConfigForm.selectCompanyImages"));
       return assetsApi.uploadImage(selectedCompanyId, file, namespace);
     },
   });
@@ -389,7 +390,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
       : ["agents", "none", "detect-model", adapterType],
     queryFn: () => {
       if (!selectedCompanyId) {
-        throw new Error("Select a company to detect the model");
+        throw new Error(t("components.agentConfigForm.selectCompanyDetectModel"));
       }
       return agentsApi.detectModel(selectedCompanyId, adapterType);
     },
@@ -469,7 +470,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   const testEnvironment = useMutation({
     mutationFn: async () => {
       if (!selectedCompanyId) {
-        throw new Error("Select a company to test adapter environment");
+        throw new Error(t("components.agentConfigForm.selectCompanyTestAdapter"));
       }
       return agentsApi.testEnvironment(selectedCompanyId, adapterType, {
         adapterConfig: buildAdapterConfigForTest(),
@@ -513,7 +514,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
       errorMessage: testEnvironment.error instanceof Error
         ? testEnvironment.error.message
         : testEnvironment.error
-          ? "Environment test failed"
+          ? t("components.agentConfigForm.testFailed")
           : null,
       result: testEnvironment.data ?? null,
     });
@@ -535,7 +536,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
       const refreshed = await agentsApi.adapterModels(selectedCompanyId, adapterType, { refresh: true });
       queryClient.setQueryData(modelQueryKey, refreshed);
     } catch (error) {
-      setRefreshModelsError(error instanceof Error ? error.message : "Failed to refresh adapter models.");
+      setRefreshModelsError(error instanceof Error ? error.message : t("components.agentConfigForm.refreshModelsFailed"));
     } finally {
       setRefreshingModels(false);
     }
@@ -903,7 +904,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
             <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {testEnvironment.error instanceof Error
                 ? testEnvironment.error.message
-                : "Environment test failed"}
+                : t("components.agentConfigForm.testFailed")}
             </div>
           )}
 

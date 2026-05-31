@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useState } from "react";
 import type { IssueBlockerAttention } from "@paperclipai/shared";
 import { cn } from "../lib/utils";
@@ -20,7 +21,7 @@ interface StatusIconProps {
 }
 
 function blockedAttentionLabel(blockerAttention: IssueBlockerAttention | null | undefined) {
-  if (!blockerAttention || blockerAttention.state === "none") return "Blocked";
+  if (!blockerAttention || blockerAttention.state === "none") return t("components.StatusIcon.blocked");
 
   if (blockerAttention.reason === "active_child") {
     const count = blockerAttention.coveredBlockerCount;
@@ -58,10 +59,11 @@ function blockedAttentionLabel(blockerAttention: IssueBlockerAttention | null | 
     return `Blocked · ${attentionCopy}`;
   }
 
-  return "Blocked";
+  return t("components.StatusIcon.blocked");
 }
 
-export function StatusIcon({ status, blockerAttention, onChange, className, showLabel }: StatusIconProps) {
+export function StatusIcon({
+  const { t } = useTranslation(); status, blockerAttention, onChange, className, showLabel }: StatusIconProps) {
   const [open, setOpen] = useState(false);
   const isCoveredBlocked = status === "blocked" && blockerAttention?.state === "covered";
   const isStalledBlocked = status === "blocked" && blockerAttention?.state === "stalled";

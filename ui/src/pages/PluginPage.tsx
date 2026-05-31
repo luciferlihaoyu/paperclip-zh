@@ -13,15 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { NotFoundPage } from "./NotFound";
+import { useTranslation } from "@/i18n";
 
-/**
- * Company-context plugin page. Renders a plugin's `page` slot at
- * `/:companyPrefix/plugins/:pluginId` when the plugin declares a page slot
- * and is enabled for that company.
- *
- * @see doc/plugins/PLUGIN_SPEC.md §19.2 — Company-Context Routes
- * @see doc/plugins/PLUGIN_SPEC.md §24.4 — Company-Context Plugin Page
- */
 export function PluginPage() {
   const params = useParams<{
     companyPrefix?: string;
@@ -33,6 +26,7 @@ export function PluginPage() {
   const pluginRouteSplat = params["*"];
   const { companies, selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
+  const { t } = useTranslation();
   const routeCompany = useMemo(() => {
     if (!routeCompanyPrefix) return null;
     const requested = routeCompanyPrefix.toUpperCase();
@@ -96,8 +90,6 @@ export function PluginPage() {
     [resolvedCompanyId, companyPrefix],
   );
 
-  // When the active route has a routeSidebar slot, the sidebar provides the
-  // back affordance, but the top bar still needs a route-specific title.
   const routeSidebarActive = useMemo(() => {
     if (!pluginRoutePath || !contributions) return false;
     const flattened: ResolvedPluginSlot[] = contributions.flatMap((contribution) =>
@@ -119,10 +111,10 @@ export function PluginPage() {
       return;
     }
     setBreadcrumbs([
-      { label: "Plugins", href: "/instance/settings/plugins" },
+      { label: t("pluginManager.title"), href: "/instance/settings/plugins" },
       { label: pageSlot.pluginDisplayName },
     ]);
-  }, [pageSlot, pluginRouteSplat, setBreadcrumbs, routeSidebarActive]);
+  }, [pageSlot, pluginRouteSplat, setBreadcrumbs, routeSidebarActive, t]);
 
   if (!resolvedCompanyId) {
     if (hasInvalidCompanyPrefix) {
@@ -130,13 +122,13 @@ export function PluginPage() {
     }
     return (
       <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">Select a company to view this page.</p>
+        <p className="text-sm text-muted-foreground">{t("pluginPage.selectCompany")}</p>
       </div>
     );
   }
 
   if (!contributions) {
-    return <div className="text-sm text-muted-foreground">Loading…</div>;
+    return <div className="text-sm text-muted-foreground">{t("common.labels.loading")}</div>;
   }
 
   if (!pluginId && pluginRoutePath) {
@@ -146,7 +138,7 @@ export function PluginPage() {
     if (duplicateMatches.length > 1) {
       return (
         <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-          Multiple plugins declare the route <code>{pluginRoutePath}</code>. Use the plugin-id route until the conflict is resolved.
+          {t("pluginPage.duplicateRoutes", { route: pluginRoutePath })}
         </div>
       );
     }
@@ -156,7 +148,6 @@ export function PluginPage() {
     if (pluginRoutePath) {
       return <NotFoundPage scope="board" />;
     }
-    // No page slot: redirect to plugin settings where plugin info is always shown
     const settingsPath = pluginId ? `/instance/settings/plugins/${pluginId}` : "/instance/settings/plugins";
     return <Navigate to={settingsPath} replace />;
   }
@@ -168,7 +159,7 @@ export function PluginPage() {
           <Button variant="ghost" size="sm" asChild>
             <Link to={companyPrefix ? `/${companyPrefix}/dashboard` : "/dashboard"}>
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back
+              {t("pluginPage.back")}
             </Link>
           </Button>
         </div>

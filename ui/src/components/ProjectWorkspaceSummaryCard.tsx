@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { Link } from "@/lib/router";
 import type { ExecutionWorkspace, Issue } from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { timeAgo } from "../lib/timeAgo";
 import { Copy, ExternalLink, FolderOpen, GitBranch, Loader2, Play, Square } from "lucide-react";
 
 function workspaceKindLabel(kind: ProjectWorkspaceSummary["kind"]) {
-  return kind === "execution_workspace" ? "Execution workspace" : "Project workspace";
+  return kind === "execution_workspace" ? t("components.ProjectWorkspaceSummaryCard.executionWorkspace") : t("components.ProjectWorkspaceSummaryCard.projectWorkspace");
 }
 
 function truncatePath(path: string) {
@@ -37,6 +38,7 @@ interface ProjectWorkspaceSummaryCardProps {
 }
 
 export function ProjectWorkspaceSummaryCard({
+  const { t } = useTranslation();
   projectRef,
   summary,
   runtimeActionKey,
@@ -123,7 +125,7 @@ export function ProjectWorkspaceSummaryCard({
                 ) : (
                   <Play className="mr-2 h-3.5 w-3.5" />
                 )}
-                {hasRunningServices ? "Stop services" : "Start services"}
+                {hasRunningServices ? t("components.ProjectWorkspaceSummaryCard.stopServices") : t("components.ProjectWorkspaceSummaryCard.startServices")}
               </Button>
             ) : null}
             {summary.kind === "execution_workspace" && summary.executionWorkspaceId && summary.executionWorkspaceStatus ? (
@@ -137,7 +139,7 @@ export function ProjectWorkspaceSummaryCard({
                   status: summary.executionWorkspaceStatus!,
                 })}
               >
-                {summary.executionWorkspaceStatus === "cleanup_failed" ? "Retry close" : "Close workspace"}
+                {summary.executionWorkspaceStatus === "cleanup_failed" ? t("components.ProjectWorkspaceSummaryCard.retryClose") : t("components.ProjectWorkspaceSummaryCard.closeWorkspace")}
               </Button>
             ) : null}
           </div>
@@ -155,15 +157,15 @@ export function ProjectWorkspaceSummaryCard({
                       text={summary.branchName}
                       containerClassName="min-w-0"
                       className="min-w-0 break-all text-left font-mono text-xs text-foreground"
-                      copiedLabel="Branch copied"
+                      copiedLabel={t("components.ProjectWorkspaceSummaryCard.branchCopied")}
                     >
                       {summary.branchName}
                     </CopyText>
                     <CopyText
                       text={summary.branchName}
-                      ariaLabel="Copy branch"
+                      ariaLabel={t("components.ProjectWorkspaceSummaryCard.copyBranch")}
                       className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground"
-                      copiedLabel="Branch copied"
+                      copiedLabel={t("components.ProjectWorkspaceSummaryCard.branchCopied")}
                     >
                       <Copy className="h-3.5 w-3.5" />
                     </CopyText>

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import type { ExecutionWorkspace } from "@paperclipai/shared";
 import { Link } from "@/lib/router";
 import { Loader2 } from "lucide-react";
@@ -45,7 +46,7 @@ export function ExecutionWorkspaceCloseDialog({
 }: ExecutionWorkspaceCloseDialogProps) {
   const queryClient = useQueryClient();
   const { pushToast } = useToastActions();
-  const actionLabel = currentStatus === "cleanup_failed" ? "Retry close" : "Close workspace";
+  const actionLabel = currentStatus === "cleanup_failed" ? t("components.executionWorkspaceCloseDialog.retryClose") : t("components.executionWorkspaceCloseDialog.closeWorkspace");
 
   const readinessQuery = useQuery({
     queryKey: queryKeys.executionWorkspaces.closeReadiness(workspaceId),
@@ -59,7 +60,7 @@ export function ExecutionWorkspaceCloseDialog({
       queryClient.setQueryData(queryKeys.executionWorkspaces.detail(workspace.id), workspace);
       queryClient.invalidateQueries({ queryKey: queryKeys.executionWorkspaces.closeReadiness(workspace.id) });
       pushToast({
-        title: currentStatus === "cleanup_failed" ? "Workspace close retried" : "Workspace closed",
+        title: currentStatus === "cleanup_failed" ? t("components.executionWorkspaceCloseDialog.closeRetried") : t("components.executionWorkspaceCloseDialog.closed"),
         tone: "success",
       });
       onOpenChange(false);
@@ -67,8 +68,8 @@ export function ExecutionWorkspaceCloseDialog({
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to close workspace",
-        body: error instanceof Error ? error.message : "Unknown error",
+        title: t("components.executionWorkspaceCloseDialog.failed"),
+        body: error instanceof Error ? error.message : t("components.executionWorkspaceCloseDialog.unknownError"),
         tone: "error",
       });
     },
@@ -104,17 +105,17 @@ export function ExecutionWorkspaceCloseDialog({
           </div>
         ) : readinessQuery.error ? (
           <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            {readinessQuery.error instanceof Error ? readinessQuery.error.message : "Failed to inspect workspace close readiness."}
+            {readinessQuery.error instanceof Error ? readinessQuery.error.message : t("components.executionWorkspaceCloseDialog.failedToInspect")}
           </div>
         ) : readiness ? (
           <div className="space-y-4">
             <div className={`rounded-xl border px-4 py-3 text-sm ${readinessTone(readiness.state)}`}>
               <div className="font-medium">
                 {readiness.state === "blocked"
-                  ? "Close is blocked"
+                  ? t("components.executionWorkspaceCloseDialog.closeBlocked")
                   : readiness.state === "ready_with_warnings"
-                    ? "Close is allowed with warnings"
-                    : "Close is ready"}
+                    ? t("components.executionWorkspaceCloseDialog.closeAllowedWarnings")
+                    : t("components.executionWorkspaceCloseDialog.closeReady")}
               </div>
               <div className="mt-1 text-xs opacity-80">
                 {readiness.isSharedWorkspace

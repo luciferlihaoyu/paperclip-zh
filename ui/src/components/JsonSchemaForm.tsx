@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "@/i18n";
 import {
   ChevronDown,
   ChevronRight,
@@ -182,7 +183,7 @@ export function validateField(
 
   // Required check
   if (isRequired && (value === undefined || value === null || value === "")) {
-    return "This field is required";
+    return t("components.JsonSchemaForm.required");
   }
 
   // Skip further validation if empty and not required
@@ -215,7 +216,7 @@ export function validateField(
 
   if (type === "number" || type === "integer") {
     const num = Number(value);
-    if (isNaN(num)) return "Must be a valid number";
+    if (isNaN(num)) return t("components.JsonSchemaForm.mustBeNumber");
     if (schema.minimum != null && num < schema.minimum) {
       return `Must be at least ${schema.minimum}`;
     }
@@ -229,7 +230,7 @@ export function validateField(
       return `Must be less than ${schema.exclusiveMaximum}`;
     }
     if (type === "integer" && !Number.isInteger(num)) {
-      return "Must be a whole number";
+      return t("components.JsonSchemaForm.mustBeWholeNumber");
     }
     if (schema.multipleOf != null && num % schema.multipleOf !== 0) {
       return `Must be a multiple of ${schema.multipleOf}`;
@@ -1113,6 +1114,7 @@ FormField.displayName = "FormField";
  * Supports primitive types, enums, secrets, objects, and arrays with recursion.
  */
 export function JsonSchemaForm({
+  const { t } = useTranslation();
   schema,
   values,
   onChange,

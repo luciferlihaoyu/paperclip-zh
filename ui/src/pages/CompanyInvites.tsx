@@ -9,32 +9,13 @@ import { useCompany } from "@/context/CompanyContext";
 import { useToast } from "@/context/ToastContext";
 import { Link } from "@/lib/router";
 import { queryKeys } from "@/lib/queryKeys";
+import { useTranslation } from "@/i18n";
 
-const inviteRoleOptions = [
-  {
-    value: "viewer",
-    label: "Viewer",
-    description: "Can view company work and follow along.",
-    gets: "View-only company membership.",
-  },
-  {
-    value: "operator",
-    label: "Operator",
-    description: "Recommended for people who need to help run work without managing access.",
-    gets: "Can assign tasks.",
-  },
-  {
-    value: "admin",
-    label: "Admin",
-    description: "Recommended for operators who need to invite people, create agents, and approve joins.",
-    gets: "Can create agents, invite users, assign tasks, and approve join requests.",
-  },
-  {
-    value: "owner",
-    label: "Owner",
-    description: "Full company access, including membership management.",
-    gets: "Everything in Admin, plus managing members.",
-  },
+const INVITE_ROLE_KEYS = [
+  { value: "viewer", labelKey: "companyInvites.viewer", descKey: "companyInvites.viewerDesc", getsKey: "companyInvites.viewerGets" },
+  { value: "operator", labelKey: "companyInvites.operator", descKey: "companyInvites.operatorDesc", getsKey: "companyInvites.operatorGets" },
+  { value: "admin", labelKey: "companyInvites.admin", descKey: "companyInvites.adminDesc", getsKey: "companyInvites.adminGets" },
+  { value: "owner", labelKey: "companyInvites.owner", descKey: "companyInvites.ownerDesc", getsKey: "companyInvites.ownerGets" },
 ] as const;
 
 const INVITE_HISTORY_PAGE_SIZE = 5;
@@ -45,6 +26,7 @@ function isInviteHistoryRow(value: unknown): value is Awaited<ReturnType<typeof 
 }
 
 export function CompanyInvites() {
+  const { t } = useTranslation();
   const { selectedCompany, selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const { pushToast } = useToast();
@@ -198,10 +180,10 @@ export function CompanyInvites() {
   if (invitesQuery.error) {
     const message =
       invitesQuery.error instanceof ApiError && invitesQuery.error.status === 403
-        ? "You do not have permission to manage company invites."
+        ? t("companyInvites.permissionDenied")
         : invitesQuery.error instanceof Error
           ? invitesQuery.error.message
-          : "Failed to load invites.";
+          : t("companyInvites.failedToLoad");
     return <div className="text-sm text-destructive">{message}</div>;
   }
 
@@ -228,7 +210,7 @@ export function CompanyInvites() {
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium">Choose a role</legend>
           <div className="rounded-xl border border-border">
-            {inviteRoleOptions.map((option, index) => {
+            {INVITE_ROLE_KEYS.map((option, index) => {
               const checked = humanRole === option.value;
               return (
                 <label
@@ -245,15 +227,15 @@ export function CompanyInvites() {
                   />
                   <span className="min-w-0 space-y-1">
                     <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-medium">{option.label}</span>
+                      <span className="text-sm font-medium">{t(option.labelKey)}</span>
                       {option.value === "operator" ? (
                         <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
-                          Default
+                          {t("companyInvites.default")}
                         </span>
                       ) : null}
                     </span>
-                    <span className="block max-w-2xl text-sm text-muted-foreground">{option.description}</span>
-                    <span className="block text-sm text-foreground">{option.gets}</span>
+                    <span className="block max-w-2xl text-sm text-muted-foreground">{t(option.descKey)}</span>
+                    <span className="block text-sm text-foreground">{t(option.getsKey)}</span>
                   </span>
                 </label>
               );
@@ -267,7 +249,7 @@ export function CompanyInvites() {
 
         <div className="flex flex-wrap items-center gap-3">
           <Button onClick={() => createInviteMutation.mutate()} disabled={createInviteMutation.isPending}>
-            {createInviteMutation.isPending ? "Creating…" : "Create invite"}
+            {createInviteMutation.isPending ? t("companyInvites.creating") : t("companyInvites.createInvite")}
           </Button>
           <span className="text-sm text-muted-foreground">Invite history below keeps the audit trail.</span>
         </div>
@@ -297,7 +279,7 @@ export function CompanyInvites() {
                 onFocus={(event) => event.currentTarget.select()}
                 onClick={(event) => event.currentTarget.select()}
                 className="w-full rounded-md border border-border bg-muted/60 px-3 py-2 text-sm text-foreground outline-none transition-colors selection:bg-primary selection:text-primary-foreground focus:border-ring"
-                aria-label="Latest invite URL"
+                aria-label={t("companyInvites.latestInviteUrlLabel")}
               />
             </label>
             <div className="flex flex-wrap gap-2">
@@ -365,7 +347,7 @@ export function CompanyInvites() {
                       </td>
                       <td className="px-5 py-3 align-top">{formatInviteAudience(invite)}</td>
                       <td className="px-5 py-3 align-top">
-                        <div>{invite.invitedByUser?.name || invite.invitedByUser?.email || "Unknown inviter"}</div>
+                        <div>{invite.invitedByUser?.name || invite.invitedByUser?.email || t("companyInvites.unknownInviter")}</div>
                         {invite.invitedByUser?.email && invite.invitedByUser.name ? (
                           <div className="text-xs text-muted-foreground">{invite.invitedByUser.email}</div>
                         ) : null}
@@ -409,7 +391,7 @@ export function CompanyInvites() {
                   onClick={() => invitesQuery.fetchNextPage()}
                   disabled={invitesQuery.isFetchingNextPage}
                 >
-                  {invitesQuery.isFetchingNextPage ? "Loading more…" : "View more"}
+                  {invitesQuery.isFetchingNextPage ? t("companyInvites.loadMore") : t("companyInvites.viewMore")}
                 </Button>
               </div>
             ) : null}

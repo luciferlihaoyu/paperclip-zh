@@ -13,6 +13,7 @@ import { agentsApi } from "../api/agents";
 import { authApi } from "../api/auth";
 import { projectsApi } from "../api/projects";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { useDialogActions } from "../context/DialogContext";
 import { usePanel } from "../context/PanelContext";
 import { useSidebar } from "../context/SidebarContext";
@@ -180,7 +181,7 @@ const TREE_CONTROL_MODE_LABEL: Record<IssueTreeControlMode, string> = {
   restore: "Restore subtree",
 };
 const LEAF_WORK_CONTROL_MODE_LABEL: Partial<Record<IssueTreeControlMode, string>> = {
-  pause: "Pause work",
+  pause: {t("issueDetail.pauseWork")},
   resume: "Resume work",
 };
 const TREE_CONTROL_MODE_HELP_TEXT: Record<IssueTreeControlMode, string> = {
@@ -375,12 +376,12 @@ function ActorIdentity({ evt, agentMap, userProfileMap }: { evt: ActivityEvent; 
     const agent = agentMap.get(id);
     return <Identity name={agent?.name ?? id.slice(0, 8)} size="sm" />;
   }
-  if (evt.actorType === "system") return <Identity name="System" size="sm" />;
+  if (evt.actorType === "system") return <Identity name={t("issueDetail.system")} size="sm" />;
   if (evt.actorType === "user") {
     const profile = userProfileMap?.get(id);
     return <Identity name={profile?.label ?? "Board"} avatarUrl={profile?.image} size="sm" />;
   }
-  return <Identity name={id || "Unknown"} size="sm" />;
+  return <Identity name={id || {t("issueDetail.unknown")}} size="sm" />;
 }
 
 function IssueSectionSkeleton({
@@ -565,7 +566,7 @@ function InboxMobileToolbar({
             size="icon-sm"
             onClick={onArchive}
             disabled={archivePending}
-            aria-label="Archive from inbox"
+            aria-label={t("issueDetail.archiveFromInbox")}
           >
             <Archive className="h-5 w-5" />
           </Button>
@@ -885,7 +886,7 @@ const IssueDetailChatTab = memo(function IssueDetailChatTab({
             disabled={commentsLoadingOlder}
             onClick={onLoadOlderComments}
           >
-            {commentsLoadingOlder ? "Loading earlier comments..." : "Load earlier comments"}
+            {commentsLoadingOlder ? {t("issueDetail.loadingEarlier")} : {t("issueDetail.loadEarlierComments")}}
           </Button>
         </div>
       ) : null}
@@ -933,7 +934,7 @@ const IssueDetailChatTab = memo(function IssueDetailChatTab({
         interruptingQueuedRunId={interruptingQueuedRunId}
         stoppingRunId={pausingWorkRunId}
         onStopRun={onPauseWorkRun}
-        stopRunLabel="Pause work"
+        stopRunLabel={t("issueDetail.pauseWork")}
         stoppingRunLabel="Pausing..."
         stopRunVariant="pause"
         onAcceptInteraction={onAcceptInteraction}
@@ -1225,6 +1226,7 @@ function IssueDetailActivityTab({
 }
 
 export function IssueDetail() {
+  const { t } = useTranslation();
   const { issueId } = useParams<{ issueId: string }>();
   const { selectedCompanyId } = useCompany();
   const { openNewIssue } = useDialogActions();
@@ -3155,7 +3157,7 @@ export function IssueDetail() {
   const treeControlPrimaryButtonLabel =
     treeControlMode === "pause"
       ? treeControlScope === "leaf"
-        ? "Pause work"
+        ? {t("issueDetail.pauseWork")}
         : "Pause and stop work"
       : treeControlMode === "cancel"
         ? `Cancel ${previewAffectedIssueCount} issues`
@@ -3217,7 +3219,7 @@ export function IssueDetail() {
         )}
       >
         <Paperclip className="h-3.5 w-3.5 mr-1.5" />
-        {uploadAttachment.isPending || importMarkdownDocument.isPending ? "Uploading..." : (
+        {uploadAttachment.isPending || importMarkdownDocument.isPending ? {t("issueDetail.uploading")} : (
           <>
             <span className="hidden sm:inline">Upload attachment</span>
             <span className="sm:hidden">Upload</span>
@@ -3268,12 +3270,12 @@ export function IssueDetail() {
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-medium">
-                  {childIssues.length === 0 ? "Paused by board." : "Subtree pause is active."}
+                  {childIssues.length === 0 ? {t("issueDetail.pausedByBoard")} : {t("issueDetail.subtreePauseActive")}}
                 </span>
                 <span className="text-xs text-amber-900/80 dark:text-amber-100/80">
                   {childIssues.length === 0
-                    ? "Issue execution is held until resume. Human comments can still wake the assignee for triage."
-                    : "Root and descendant execution is held until resume. Human comments can still wake assignees for triage."}
+                    ? {t("issueDetail.pausedLeafDesc")}
+                    : {t("issueDetail.subtreePauseDesc")}}
                 </span>
               </div>
               <div className="text-xs text-amber-900/80 dark:text-amber-100/80">
@@ -3398,7 +3400,7 @@ export function IssueDetail() {
             <span
               data-testid="issue-detail-parked-blocker"
               className="inline-flex items-center gap-1 rounded-full border border-amber-500/60 bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300 shrink-0"
-              title="Blocked by parked work — at least one assigned blocker is in backlog and will not wake its assignee."
+              title={t("issueDetail.blockedByParkedWorkDesc")}
             >
               <Flag className="h-3 w-3" />
               Blocked by parked work
@@ -3447,7 +3449,7 @@ export function IssueDetail() {
                 variant="ghost"
                 size="icon-xs"
                 onClick={copyIssueToClipboard}
-                title="Copy issue as markdown"
+                title={t("issueDetail.copyIssue")}
               >
                 {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
               </Button>
@@ -3455,7 +3457,7 @@ export function IssueDetail() {
                 variant="ghost"
                 size="icon-xs"
                 onClick={() => setMobilePropsOpen(true)}
-                title="Properties"
+                title={t("issueDetail.properties")}
               >
                 <SlidersHorizontal className="h-4 w-4" />
               </Button>
@@ -3471,8 +3473,8 @@ export function IssueDetail() {
                   if (!archivePending && issue?.id) archiveFromInbox.mutate(issue.id);
                 }}
                 disabled={archivePending}
-                title="Archive from inbox"
-                aria-label="Archive from inbox"
+                title={t("issueDetail.archiveFromInbox")}
+                aria-label={t("issueDetail.archiveFromInbox")}
               >
                 <Archive className="h-4 w-4" />
               </Button>
@@ -3481,7 +3483,7 @@ export function IssueDetail() {
               variant="ghost"
               size="icon-xs"
               onClick={copyIssueToClipboard}
-              title="Copy issue as markdown"
+              title={t("issueDetail.copyIssue")}
             >
               {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
             </Button>
@@ -3504,8 +3506,8 @@ export function IssueDetail() {
                   variant="ghost"
                   size="icon-xs"
                   className="shrink-0"
-                  aria-label="More issue actions"
-                  title="More issue actions"
+                  aria-label={t("issueDetail.moreActions")}
+                  title={t("issueDetail.moreActions")}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
@@ -3845,7 +3847,7 @@ export function IssueDetail() {
                       e.stopPropagation();
                       setConfirmDeleteId(attachment.id);
                     }}
-                    title="Delete attachment"
+                    title={t("issueDetail.deleteAttachment")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -3874,7 +3876,7 @@ export function IssueDetail() {
                     className="text-muted-foreground hover:text-destructive"
                     onClick={() => deleteAttachment.mutate(attachment.id)}
                     disabled={deleteAttachment.isPending}
-                    title="Delete attachment"
+                    title={t("issueDetail.deleteAttachment")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

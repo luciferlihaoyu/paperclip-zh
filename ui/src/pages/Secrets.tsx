@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   AlertTriangle,
-  ArchiveRestore,
-  Archive,
+  {t("secrets.actions.archive")}Restore,
+  {t("secrets.actions.archive")},
   Ban,
   CheckCircle2,
   Cloud,
@@ -39,6 +39,7 @@ import type {
   SecretStatus,
 } from "@paperclipai/shared";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useToastActions } from "../context/ToastContext";
 import {
@@ -206,7 +207,7 @@ function normalizeSecretKeyForPreview(input: string) {
 
 
 function modeLabel(managedMode: SecretManagedMode) {
-  return managedMode === "paperclip_managed" ? "Paperclip-managed" : "Linked external";
+  return managedMode === "paperclip_managed" ? t("secrets.mode.paperclipManaged") : t("secrets.mode.linkedExternal");
 }
 
 function modeDescription(managedMode: SecretManagedMode) {
@@ -290,7 +291,7 @@ export function getDefaultProviderConfigId(
 }
 
 function providerVaultLabel(configs: CompanySecretProviderConfig[], id: string | null | undefined) {
-  if (!id) return "Deployment default";
+  if (!id) return t("secrets.create.deploymentDefault");
   return configs.find((config) => config.id === id)?.displayName ?? "Unknown vault";
 }
 
@@ -354,6 +355,7 @@ export function getAwsManagedPathPreview(input: {
 export function Secrets() {
   const queryClient = useQueryClient();
   const { selectedCompanyId } = useCompany();
+  const { t } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumbs();
   const { pushToast } = useToastActions();
   const [activeTab, setActiveTab] = useState<SecretsTab>("secrets");
@@ -363,8 +365,8 @@ export function Secrets() {
   const [providerFilter, setProviderFilter] = useState<SecretProvider | "all">("all");
   const [selectedSecretId, setSelectedSecretId] = useState<string | null>(null);
   const [usageDialogSecretId, setUsageDialogSecretId] = useState<string | null>(null);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [importOpen, setImportOpen] = useState(false);
+  const [create{t("secrets.actions.open")}, setCreate{t("secrets.actions.open")}] = useState(false);
+  const [import{t("secrets.actions.open")}, setImport{t("secrets.actions.open")}] = useState(false);
   const [createMode, setCreateMode] = useState<CreateMode>("managed");
   const [createForm, setCreateForm] = useState({
     name: "",
@@ -376,13 +378,13 @@ export function Secrets() {
     providerConfigId: "",
   });
   const [createError, setCreateError] = useState<string | null>(null);
-  const [rotateOpen, setRotateOpen] = useState(false);
+  const [rotate{t("secrets.actions.open")}, setRotate{t("secrets.actions.open")}] = useState(false);
   const [rotateValue, setRotateValue] = useState("");
   const [rotateExternalRef, setRotateExternalRef] = useState("");
   const [rotateProviderConfigId, setRotateProviderConfigId] = useState("");
   const [rotateError, setRotateError] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<CompanySecret | null>(null);
-  const [vaultDialogOpen, setVaultDialogOpen] = useState(false);
+  const [deleteConfirm, set{t("secrets.actions.delete")}Confirm] = useState<CompanySecret | null>(null);
+  const [vaultDialog{t("secrets.actions.open")}, setVaultDialog{t("secrets.actions.open")}] = useState(false);
   const [editingVault, setEditingVault] = useState<CompanySecretProviderConfig | null>(null);
   const [removeVaultConfirm, setRemoveVaultConfirm] = useState<CompanySecretProviderConfig | null>(null);
   const [vaultForm, setVaultForm] = useState<ProviderVaultForm>(() => emptyProviderVaultForm());
@@ -392,7 +394,7 @@ export function Secrets() {
   const [vaultDiscoveryError, setVaultDiscoveryError] = useState<string | null>(null);
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Secrets" }]);
+    setBreadcrumbs([{ label: t("secrets.title") }]);
   }, [setBreadcrumbs]);
 
   const secretsQuery = useQuery({
@@ -545,7 +547,7 @@ export function Secrets() {
     },
     onSuccess: (created) => {
       pushToast({ title: "Secret created", body: created.name, tone: "success" });
-      setCreateOpen(false);
+      setCreate{t("secrets.actions.open")}(false);
       setCreateForm({
         name: "",
         key: "",
@@ -580,7 +582,7 @@ export function Secrets() {
     },
     onSuccess: (updated) => {
       pushToast({ title: "Rotated", body: `${updated.name} → v${updated.latestVersion}`, tone: "success" });
-      setRotateOpen(false);
+      setRotate{t("secrets.actions.open")}(false);
       setRotateValue("");
       setRotateExternalRef("");
       setRotateProviderConfigId("");
@@ -622,13 +624,13 @@ export function Secrets() {
     mutationFn: (id: string) => secretsApi.remove(id),
     onSuccess: (_response, id) => {
       pushToast({ title: "Secret deleted", tone: "info" });
-      setDeleteConfirm(null);
+      set{t("secrets.actions.delete")}Confirm(null);
       if (selectedSecretId === id) setSelectedSecretId(null);
       invalidateAll([id]);
     },
     onError: (error) => {
       pushToast({
-        title: "Delete failed",
+        title: "{t("secrets.actions.delete")} failed",
         body: error instanceof Error ? error.message : "Try again",
         tone: "error",
       });
@@ -653,7 +655,7 @@ export function Secrets() {
     },
     onSuccess: (saved) => {
       pushToast({ title: editingVault ? "Provider vault updated" : "Provider vault created", body: saved.displayName, tone: "success" });
-      setVaultDialogOpen(false);
+      setVaultDialog{t("secrets.actions.open")}(false);
       setEditingVault(null);
       setVaultForm(emptyProviderVaultForm());
       setVaultError(null);
@@ -690,7 +692,7 @@ export function Secrets() {
     },
     onError: (error) => {
       pushToast({
-        title: "Disable failed",
+        title: "{t("secrets.actions.disable")} failed",
         body: error instanceof Error ? error.message : "Try again",
         tone: "error",
       });
@@ -748,7 +750,7 @@ export function Secrets() {
   });
 
   useEffect(() => {
-    if (!createOpen || providers.length === 0) return;
+    if (!create{t("secrets.actions.open")} || providers.length === 0) return;
     const currentBlockReason = getCreateProviderBlockReason(
       providers.find((provider) => provider.id === createForm.provider) ?? null,
       createMode,
@@ -766,24 +768,24 @@ export function Secrets() {
         providerConfigId: getDefaultProviderConfigId(providerConfigs, replacement.id),
       }));
     }
-  }, [createForm.provider, createMode, createOpen, providerConfigs, providerHealthQuery.data, providers]);
+  }, [createForm.provider, createMode, create{t("secrets.actions.open")}, providerConfigs, providerHealthQuery.data, providers]);
 
   useEffect(() => {
-    if (!createOpen) return;
+    if (!create{t("secrets.actions.open")}) return;
     const current = providerConfigs.find((config) => config.id === createForm.providerConfigId);
     if (current?.provider === createForm.provider) return;
     setCreateForm((form) => ({
       ...form,
       providerConfigId: getDefaultProviderConfigId(providerConfigs, form.provider),
     }));
-  }, [createForm.provider, createForm.providerConfigId, createOpen, providerConfigs]);
+  }, [createForm.provider, createForm.providerConfigId, create{t("secrets.actions.open")}, providerConfigs]);
 
   useEffect(() => {
-    if (!rotateOpen || !selectedSecret) return;
+    if (!rotate{t("secrets.actions.open")} || !selectedSecret) return;
     setRotateProviderConfigId(
       selectedSecret.providerConfigId ?? getDefaultProviderConfigId(providerConfigs, selectedSecret.provider),
     );
-  }, [providerConfigs, rotateOpen, selectedSecret]);
+  }, [providerConfigs, rotate{t("secrets.actions.open")}, selectedSecret]);
 
   function openCreateVault(provider: SecretProvider = "local_encrypted") {
     setEditingVault(null);
@@ -791,7 +793,7 @@ export function Secrets() {
     setVaultError(null);
     setVaultDiscovery(null);
     setVaultDiscoveryError(null);
-    setVaultDialogOpen(true);
+    setVaultDialog{t("secrets.actions.open")}(true);
   }
 
   function openEditVault(config: CompanySecretProviderConfig) {
@@ -800,7 +802,7 @@ export function Secrets() {
     setVaultError(null);
     setVaultDiscovery(null);
     setVaultDiscoveryError(null);
-    setVaultDialogOpen(true);
+    setVaultDialog{t("secrets.actions.open")}(true);
   }
 
   function applyVaultDiscoveryCandidate(candidate: SecretProviderConfigDiscoveryCandidate) {
@@ -828,7 +830,7 @@ export function Secrets() {
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-center gap-2">
         <KeyRound className="h-5 w-5 text-muted-foreground" />
-        <h1 className="text-lg font-semibold">Secrets</h1>
+        <h1 className="text-lg font-semibold">{t("secrets.title")}</h1>
       </div>
 
       <Tabs
@@ -838,8 +840,8 @@ export function Secrets() {
       >
         <PageTabBar
           items={[
-            { value: "secrets", label: "Secrets" },
-            { value: "vaults", label: "Provider vaults" },
+            { value: "secrets", label: t("secrets.tabs.secrets") },
+            { value: "vaults", label: t("secrets.tabs.vaults") },
           ]}
           align="start"
           value={activeTab}
@@ -854,9 +856,9 @@ export function Secrets() {
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by name, key, ref"
+                placeholder={t("secrets.filters.searchPlaceholder")}
                 className="pl-7 text-xs sm:text-sm"
-                aria-label="Search secrets"
+                aria-label={t("secrets.search.ariaLabel")}
                 data-page-search-target="true"
               />
             </div>
@@ -870,12 +872,12 @@ export function Secrets() {
             />
             <ImportFromVaultButton
               providerConfigs={providerConfigs}
-              onClick={() => setImportOpen(true)}
+              onClick={() => setImport{t("secrets.actions.open")}(true)}
               onManageVaults={() => setActiveTab("vaults")}
               className="ml-auto"
             />
-            <Button onClick={() => setCreateOpen(true)} size="sm">
-              <Plus className="h-3.5 w-3.5 mr-1" /> New secret
+            <Button onClick={() => setCreate{t("secrets.actions.open")}(true)} size="sm">
+              <Plus className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.newSecret")}
             </Button>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
@@ -884,31 +886,31 @@ export function Secrets() {
                 <AlertCircle className="h-4 w-4" /> Failed to load secrets:{" "}
                 {(secretsQuery.error as Error).message}
                 <Button variant="ghost" size="sm" onClick={() => secretsQuery.refetch()}>
-                  Retry
+                  {t("common.buttons.retry")}
                 </Button>
               </div>
             ) : secrets.length === 0 && !secretsQuery.isPending ? (
               <EmptyState
                 icon={KeyRound}
-                message="No secrets yet. Create your first managed secret or link an external reference."
-                action="New secret"
-                onAction={() => setCreateOpen(true)}
+                message={t("secrets.empty.noSecrets")}
+                action={t("secrets.actions.newSecret")}
+                onAction={() => setCreate{t("secrets.actions.open")}(true)}
               />
             ) : filtered.length === 0 ? (
-              <EmptyState icon={Search} message="No secrets match your filters." />
+              <EmptyState icon={Search} message={t("secrets.empty.noMatch")} />
             ) : (
               <table className="w-full text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">Name</th>
-                  <th className="px-2 py-2 text-left font-medium">Mode</th>
-                  <th className="px-2 py-2 text-left font-medium">Provider</th>
-                  <th className="px-2 py-2 text-left font-medium">Status</th>
-                  <th className="px-2 py-2 text-left font-medium">Version</th>
-                  <th className="px-2 py-2 text-left font-medium">Last rotated</th>
-                  <th className="px-2 py-2 text-left font-medium">Last resolved</th>
-                  <th className="px-2 py-2 text-left font-medium">References</th>
-                  <th className="px-2 py-2 text-left font-medium">Reference</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("secrets.table.name")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.mode")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.provider")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.status")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.version")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.lastRotated")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.lastResolved")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.references")}</th>
+                  <th className="px-2 py-2 text-left font-medium">{t("secrets.table.reference")}</th>
                   <th className="px-3 py-2"></th>
                 </tr>
               </thead>
@@ -964,7 +966,7 @@ export function Secrets() {
                           {secret.externalRef ?? "—"}
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">Owned</span>
+                        <span className="text-muted-foreground">{t("secrets.status.owned")}</span>
                       )}
                     </td>
                     <td className="px-3 py-2.5 text-right">
@@ -976,7 +978,7 @@ export function Secrets() {
                           setSelectedSecretId(secret.id);
                         }}
                       >
-                        Open
+                        {t("secrets.actions.open")}
                       </Button>
                     </td>
                   </tr>
@@ -992,10 +994,10 @@ export function Secrets() {
             providerConfigs={providerConfigs}
             loading={providerConfigsQuery.isPending}
             error={providerConfigsQuery.error}
-            onRetry={() => providerConfigsQuery.refetch()}
+            on{t("common.buttons.retry")}={() => providerConfigsQuery.refetch()}
             onCreate={openCreateVault}
             onEdit={openEditVault}
-            onDisable={(config) => disableVaultMutation.mutate(config.id)}
+            on{t("secrets.actions.disable")}={(config) => disableVaultMutation.mutate(config.id)}
             onRemove={(config) => setRemoveVaultConfirm(config)}
             onSetDefault={(config) => defaultVaultMutation.mutate(config.id)}
             onHealthCheck={(config) => healthVaultMutation.mutate(config.id)}
@@ -1010,7 +1012,7 @@ export function Secrets() {
         </TabsContent>
       </Tabs>
 
-      <Sheet open={Boolean(selectedSecret)} onOpenChange={(open) => !open && setSelectedSecretId(null)}>
+      <Sheet open={Boolean(selectedSecret)} on{t("secrets.actions.open")}Change={(open) => !open && setSelectedSecretId(null)}>
         <SheetContent className="w-full sm:max-w-xl flex flex-col gap-0">
           {selectedSecret ? (
             <>
@@ -1031,7 +1033,7 @@ export function Secrets() {
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    setRotateOpen(true);
+                    setRotate{t("secrets.actions.open")}(true);
                     setRotateValue("");
                     setRotateExternalRef("");
                     setRotateProviderConfigId(
@@ -1042,7 +1044,7 @@ export function Secrets() {
                   }}
                 >
                   <RefreshCw className="h-3.5 w-3.5 mr-1" />
-                  {selectedSecret.managedMode === "external_reference" ? "Update reference" : "Update value"}
+                  {selectedSecret.managedMode === "external_reference" ? t("secrets.actions.updateReference") : t("secrets.actions.updateValue")}
                 </Button>
                 {selectedSecret.status === "active" ? (
                   <Button
@@ -1051,7 +1053,7 @@ export function Secrets() {
                     onClick={() => statusMutation.mutate({ id: selectedSecret.id, status: "disabled" })}
                     disabled={statusMutation.isPending}
                   >
-                    <Ban className="h-3.5 w-3.5 mr-1" /> Disable
+                    <Ban className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.disable")}
                   </Button>
                 ) : (
                   <Button
@@ -1060,7 +1062,7 @@ export function Secrets() {
                     onClick={() => statusMutation.mutate({ id: selectedSecret.id, status: "active" })}
                     disabled={statusMutation.isPending}
                   >
-                    <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Activate
+                    <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.activate")}
                   </Button>
                 )}
                 {selectedSecret.status === "archived" ? (
@@ -1070,7 +1072,7 @@ export function Secrets() {
                     onClick={() => statusMutation.mutate({ id: selectedSecret.id, status: "active" })}
                     disabled={statusMutation.isPending}
                   >
-                    <ArchiveRestore className="h-3.5 w-3.5 mr-1" /> Unarchive
+                    <{t("secrets.actions.archive")}Restore className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.unarchive")}
                   </Button>
                 ) : (
                   <Button
@@ -1079,25 +1081,25 @@ export function Secrets() {
                     onClick={() => statusMutation.mutate({ id: selectedSecret.id, status: "archived" })}
                     disabled={statusMutation.isPending}
                   >
-                    <Archive className="h-3.5 w-3.5 mr-1" /> Archive
+                    <{t("secrets.actions.archive")} className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.archive")}
                   </Button>
                 )}
                 <Button
                   size="sm"
                   variant="outline"
                   className="text-destructive hover:text-destructive"
-                  onClick={() => setDeleteConfirm(selectedSecret)}
+                  onClick={() => set{t("secrets.actions.delete")}Confirm(selectedSecret)}
                 >
-                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.delete")}
                 </Button>
               </div>
               <Tabs value={secretDetailTab} onValueChange={setSecretDetailTab} className="flex-1 min-h-0 flex flex-col">
                 <div className="border-b border-border px-4">
                   <PageTabBar
                     items={[
-                      { value: "details", label: "Details" },
-                      { value: "usage", label: usageQuery.data ? `Usage (${usageQuery.data.bindings.length})` : "Usage" },
-                      { value: "events", label: "Access events" },
+                      { value: "details", label: t("secrets.detail.tabs.details") },
+                      { value: "usage", label: usageQuery.data ? `${t("secrets.detail.tabs.usage")} (${usageQuery.data.bindings.length})` : t("secrets.detail.tabs.usage") },
+                      { value: "events", label: t("secrets.detail.tabs.events") },
                     ]}
                     align="start"
                     value={secretDetailTab}
@@ -1123,7 +1125,7 @@ export function Secrets() {
 
       <Dialog
         open={Boolean(usageDialogSecret)}
-        onOpenChange={(open) => !open && setUsageDialogSecretId(null)}
+        on{t("secrets.actions.open")}Change={(open) => !open && setUsageDialogSecretId(null)}
       >
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -1145,13 +1147,13 @@ export function Secrets() {
 
       {selectedCompanyId && (
         <ImportFromVaultDialog
-          open={importOpen}
-          onOpenChange={setImportOpen}
+          open={import{t("secrets.actions.open")}}
+          on{t("secrets.actions.open")}Change={setImport{t("secrets.actions.open")}}
           companyId={selectedCompanyId}
           providerConfigs={providerConfigs}
           existingSecrets={secrets}
           onManageVaults={() => {
-            setImportOpen(false);
+            setImport{t("secrets.actions.open")}(false);
             setActiveTab("vaults");
           }}
           onImportComplete={() => {
@@ -1160,10 +1162,10 @@ export function Secrets() {
         />
       )}
 
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      <Dialog open={create{t("secrets.actions.open")}} on{t("secrets.actions.open")}Change={setCreate{t("secrets.actions.open")}}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Create secret</DialogTitle>
+            <DialogTitle>{t("secrets.create.dialog.title")}</DialogTitle>
             <DialogDescription>
               Choose whether Paperclip should own future provider writes, or only resolve an existing
               provider reference at runtime.
@@ -1178,20 +1180,20 @@ export function Secrets() {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium" htmlFor="new-secret-name">Name</label>
+                <label className="text-xs font-medium" htmlFor="new-secret-name">{t("secrets.create.nameLabel")}</label>
                 <Input
                   id="new-secret-name"
                   value={createForm.name}
                   onChange={(event) =>
                     setCreateForm((current) => ({ ...current, name: event.target.value }))
                   }
-                  placeholder="OPENAI_API_KEY"
+                  placeholder={t("secrets.create.namePlaceholder")}
                   autoFocus
                 />
               </div>
               <div>
                 <label className="text-xs font-medium" htmlFor="new-secret-key">
-                  Key <span className="text-muted-foreground/70">(optional)</span>
+                  >{t("secrets.create.keyLabel")} <span className="text-muted-foreground/70">(optional)</span>
                 </label>
                 <Input
                   id="new-secret-key"
@@ -1199,12 +1201,12 @@ export function Secrets() {
                   onChange={(event) =>
                     setCreateForm((current) => ({ ...current, key: event.target.value }))
                   }
-                  placeholder="auto from name"
+                  placeholder={t("secrets.create.autoFromName")}
                 />
               </div>
             </div>
             <div>
-              <label className="text-xs font-medium" htmlFor="new-secret-provider">Provider</label>
+              <label className="text-xs font-medium" htmlFor="new-secret-provider">{t("secrets.create.providerLabel")}</label>
               <select
                 id="new-secret-provider"
                 className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm outline-none"
@@ -1230,9 +1232,9 @@ export function Secrets() {
                   >
                     {provider.label}
                     {provider.configured === false
-                      ? " (not configured)"
+                      ? {t("secrets.create.notConfigured")}
                       : provider.requiresExternalRef
-                        ? " (external only)"
+                        ? {t("secrets.create.externalOnly")}
                         : ""}
                   </option>
                 ))}
@@ -1247,7 +1249,7 @@ export function Secrets() {
               ) : null}
             </div>
             <div>
-              <label className="text-xs font-medium" htmlFor="new-secret-vault">Provider vault</label>
+              <label className="text-xs font-medium" htmlFor="new-secret-vault">{t("secrets.create.vaultLabel")}</label>
               <select
                 id="new-secret-vault"
                 className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm outline-none"
@@ -1262,7 +1264,7 @@ export function Secrets() {
                   return (
                     <option key={config.id} value={config.id} disabled={Boolean(blockReason)}>
                       {config.displayName}
-                      {config.isDefault ? " (default)" : ""}
+                      {config.isDefault ? {t("secrets.create.defaultVault")} : ""}
                       {blockReason ? ` (${blockReason})` : ""}
                     </option>
                   );
@@ -1272,7 +1274,7 @@ export function Secrets() {
                 <ProviderVaultInlineWarning config={selectedCreateProviderConfig} />
               ) : (
                 <p className="mt-1 text-[11px] text-muted-foreground">
-                  Existing deployment-level provider settings stay available for backwards compatibility.
+                  {t("secrets.create.deploymentDefaultHint")}
                 </p>
               )}
             </div>
@@ -1283,7 +1285,7 @@ export function Secrets() {
                   write a new provider version through Paperclip.
                   {awsManagedPathPreview ? (
                     <div className="mt-1">
-                      AWS managed path:{" "}
+                      {t("secrets.create.awsPath")}{" "}
                       <code className="break-all rounded bg-background/70 px-1 py-0.5">
                         {awsManagedPathPreview}
                       </code>
@@ -1291,7 +1293,7 @@ export function Secrets() {
                   ) : null}
                 </div>
                 <div>
-                  <label className="text-xs font-medium" htmlFor="new-secret-value">Value</label>
+                  <label className="text-xs font-medium" htmlFor="new-secret-value">{t("secrets.create.valueLabel")}</label>
                   <Textarea
                     id="new-secret-value"
                     value={createForm.value}
@@ -1300,7 +1302,7 @@ export function Secrets() {
                     }
                     rows={3}
                     className="min-w-0 overflow-x-hidden break-all font-mono text-xs"
-                    placeholder="Stored once, never re-displayed"
+                    placeholder={t("secrets.create.valuePlaceholder")}
                   />
                 </div>
               </>
@@ -1324,7 +1326,7 @@ export function Secrets() {
             )}
             <div>
               <label className="text-xs font-medium" htmlFor="new-secret-description">
-                Description <span className="text-muted-foreground/70">(optional)</span>
+                {t("secrets.create.descriptionLabel")} <span className="text-muted-foreground/70">(optional)</span>
               </label>
               <Input
                 id="new-secret-description"
@@ -1332,13 +1334,13 @@ export function Secrets() {
                 onChange={(event) =>
                   setCreateForm((current) => ({ ...current, description: event.target.value }))
                 }
-                placeholder="What is this secret used for? (no values)"
+                placeholder={t("secrets.create.descriptionPlaceholder")}
               />
             </div>
             {createError ? <p className="text-xs text-destructive">{createError}</p> : null}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>
+            <Button variant="outline" onClick={() => setCreate{t("secrets.actions.open")}(false)}>
               Cancel
             </Button>
             <Button
@@ -1354,18 +1356,18 @@ export function Secrets() {
               }
             >
               {createMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-              {createMode === "managed" ? "Create secret" : "Link reference"}
+              {createMode === "managed" ? t("secrets.actions.createSecret") : t("secrets.actions.linkReference")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={vaultDialogOpen} onOpenChange={setVaultDialogOpen}>
+      <Dialog open={vaultDialog{t("secrets.actions.open")}} on{t("secrets.actions.open")}Change={setVaultDialog{t("secrets.actions.open")}}>
         <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{editingVault ? "Edit provider vault" : "Create provider vault"}</DialogTitle>
+            <DialogTitle>{editingVault ? t("secrets.vaults.editDialog.title") : t("secrets.vaults.createDialog.title")}</DialogTitle>
             <DialogDescription>
-              Save only non-sensitive routing metadata. Credentials stay in the runtime environment or provider identity.
+              {t("secrets.vaults.createDialog.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -1425,7 +1427,7 @@ export function Secrets() {
                     Warning
                   </option>
                   <option value="coming_soon">Coming soon</option>
-                  <option value="disabled">Disabled</option>
+                  <option value="disabled">{t("secrets.actions.disable")}d</option>
                 </select>
               </div>
               <label className="flex items-center gap-2 pt-6 text-sm">
@@ -1468,7 +1470,7 @@ export function Secrets() {
             {vaultError ? <p className="text-xs text-destructive">{vaultError}</p> : null}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setVaultDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setVaultDialog{t("secrets.actions.open")}(false)}>
               Cancel
             </Button>
             <Button
@@ -1483,17 +1485,17 @@ export function Secrets() {
               }
             >
               {saveVaultMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-              {editingVault ? "Save vault" : "Create vault"}
+              {editingVault ? t("secrets.vaults.save") : t("secrets.vaults.create")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={rotateOpen} onOpenChange={setRotateOpen}>
+      <Dialog open={rotate{t("secrets.actions.open")}} on{t("secrets.actions.open")}Change={setRotate{t("secrets.actions.open")}}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {selectedSecret?.managedMode === "external_reference" ? "Update external reference" : "Update secret value"}
+              {selectedSecret?.managedMode === "external_reference" ? t("secrets.rotate.title.external") : t("secrets.rotate.title.managed")}
             </DialogTitle>
             <DialogDescription>
               {selectedSecret?.managedMode === "external_reference"
@@ -1515,7 +1517,7 @@ export function Secrets() {
                 return (
                   <option key={config.id} value={config.id} disabled={Boolean(blockReason)}>
                     {config.displayName}
-                    {config.isDefault ? " (default)" : ""}
+                    {config.isDefault ? {t("secrets.create.defaultVault")} : ""}
                     {blockReason ? ` (${blockReason})` : ""}
                   </option>
                 );
@@ -1558,7 +1560,7 @@ export function Secrets() {
           )}
           {rotateError ? <p className="text-xs text-destructive">{rotateError}</p> : null}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRotateOpen(false)}>
+            <Button variant="outline" onClick={() => setRotate{t("secrets.actions.open")}(false)}>
               Cancel
             </Button>
             <Button
@@ -1575,40 +1577,40 @@ export function Secrets() {
               }
             >
               {rotateMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-              {selectedSecret?.managedMode === "external_reference" ? "Update reference" : "Update value"}
+              {selectedSecret?.managedMode === "external_reference" ? t("secrets.actions.updateReference") : t("secrets.actions.updateValue")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(deleteConfirm)} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
+      <Dialog open={Boolean(deleteConfirm)} on{t("secrets.actions.open")}Change={(open) => !open && set{t("secrets.actions.delete")}Confirm(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete secret</DialogTitle>
+            <DialogTitle>{t("secrets.actions.delete")} secret</DialogTitle>
             <DialogDescription>
-              Permanently removes <strong>{deleteConfirm?.name}</strong>. Active bindings will fail until you remap them.
+              {t("secrets.delete.description")} <strong>{deleteConfirm?.name}</strong>. {t("secrets.delete.warning")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => set{t("secrets.actions.delete")}Confirm(null)}>Cancel</Button>
             <Button
               variant="destructive"
               onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm.id)}
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-              Delete
+              {t("secrets.actions.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(removeVaultConfirm)} onOpenChange={(open) => !open && setRemoveVaultConfirm(null)}>
+      <Dialog open={Boolean(removeVaultConfirm)} on{t("secrets.actions.open")}Change={(open) => !open && setRemoveVaultConfirm(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Remove provider vault</DialogTitle>
             <DialogDescription>
-              Removes <strong>{removeVaultConfirm?.displayName}</strong> from Paperclip only.{" "}
+              {t("secrets.vaults.removeDialog.description")} <strong>{removeVaultConfirm?.displayName}</strong> {t("secrets.vaults.removeDialog.fromPaperclip")}{" "}
               {removeVaultConfirm?.provider === "aws_secrets_manager"
                 ? "This does not delete the remote AWS Secrets Manager vault, secrets, or any AWS data."
                 : "This does not delete any remote provider data."}{" "}
@@ -1637,7 +1639,7 @@ function SecretsHowToUse() {
     <div className="flex items-start gap-2 rounded-md border border-border bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
       <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
       <div className="space-y-1">
-        <p className="font-medium text-foreground">Use secrets by binding them to runtime environment variables.</p>
+        <p className="font-medium text-foreground">{t("secrets.howToUse.title")}</p>
         <p>
           Create or link a secret here, then open an agent&apos;s Environment variables or a project&apos;s Env field.
           Add the env key the process expects, for example <code className="font-mono">GH_TOKEN</code>, choose{" "}
@@ -1674,9 +1676,9 @@ function SecretsFiltersPopover({
 
   const statusOptions: Array<{ value: SecretStatus | "all"; label: string }> = [
     { value: "active", label: "Active" },
-    { value: "all", label: "All statuses" },
-    { value: "disabled", label: "Disabled" },
-    { value: "archived", label: "Archived" },
+    { value: "all", label: t("secrets.filters.allStatuses") },
+    { value: "disabled", label: "{t("secrets.actions.disable")}d" },
+    { value: "archived", label: "{t("secrets.actions.archive")}d" },
   ];
 
   return (
@@ -1839,7 +1841,7 @@ function ImportFromVaultButton({
         className={cn("text-xs text-muted-foreground", className)}
         title="Configure an AWS provider vault to enable remote import"
       >
-        <Cloud className="h-3.5 w-3.5 mr-1" /> AWS vault disabled — manage
+        <Cloud className="h-3.5 w-3.5 mr-1" /> {t("secrets.awsVaultDisabled")}
       </Button>
     );
   }
@@ -1852,7 +1854,7 @@ function ImportFromVaultButton({
       className={className}
       data-testid="import-from-vault-button"
     >
-      <Cloud className="h-3.5 w-3.5 mr-1" /> Import from vault
+      <Cloud className="h-3.5 w-3.5 mr-1" /> {t("secrets.actions.importFromVault")}
     </Button>
   );
 }
@@ -1862,10 +1864,10 @@ export function ProviderVaultsTab({
   providerConfigs,
   loading,
   error,
-  onRetry,
+  on{t("common.buttons.retry")},
   onCreate,
   onEdit,
-  onDisable,
+  on{t("secrets.actions.disable")},
   onRemove,
   onSetDefault,
   onHealthCheck,
@@ -1875,10 +1877,10 @@ export function ProviderVaultsTab({
   providerConfigs: CompanySecretProviderConfig[];
   loading: boolean;
   error: unknown;
-  onRetry: () => void;
+  on{t("common.buttons.retry")}: () => void;
   onCreate: (provider: SecretProvider) => void;
   onEdit: (config: CompanySecretProviderConfig) => void;
-  onDisable: (config: CompanySecretProviderConfig) => void;
+  on{t("secrets.actions.disable")}: (config: CompanySecretProviderConfig) => void;
   onRemove: (config: CompanySecretProviderConfig) => void;
   onSetDefault: (config: CompanySecretProviderConfig) => void;
   onHealthCheck: (config: CompanySecretProviderConfig) => void;
@@ -1897,8 +1899,8 @@ export function ProviderVaultsTab({
     return (
       <div className="py-4 text-sm text-destructive flex items-center gap-2">
         <AlertCircle className="h-4 w-4" /> Failed to load provider vaults: {(error as Error).message}
-        <Button variant="ghost" size="sm" onClick={onRetry}>
-          Retry
+        <Button variant="ghost" size="sm" onClick={on{t("common.buttons.retry")}}>
+          {t("common.buttons.retry")}
         </Button>
       </div>
     );
@@ -1948,8 +1950,8 @@ export function ProviderVaultsTab({
             {configs.length === 0 ? (
               <div className="rounded-md border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
                 {isComingSoonFamily
-                  ? "Not yet supported."
-                  : "No company-specific vaults yet. Secrets can still use the deployment default provider settings."}
+                  ? t("secrets.vaults.notSupported")
+                  : "{t("secrets.vaults.noVaults")}"}
               </div>
             ) : (
               <div className="space-y-3">
@@ -1959,7 +1961,7 @@ export function ProviderVaultsTab({
                     config={config}
                     pending={pendingActionId === config.id}
                     onEdit={() => onEdit(config)}
-                    onDisable={() => onDisable(config)}
+                    on{t("secrets.actions.disable")}={() => on{t("secrets.actions.disable")}(config)}
                     onRemove={() => onRemove(config)}
                     onSetDefault={() => onSetDefault(config)}
                     onHealthCheck={() => onHealthCheck(config)}
@@ -1978,7 +1980,7 @@ function ProviderVaultCard({
   config,
   pending,
   onEdit,
-  onDisable,
+  on{t("secrets.actions.disable")},
   onRemove,
   onSetDefault,
   onHealthCheck,
@@ -1986,7 +1988,7 @@ function ProviderVaultCard({
   config: CompanySecretProviderConfig;
   pending: boolean;
   onEdit: () => void;
-  onDisable: () => void;
+  on{t("secrets.actions.disable")}: () => void;
   onRemove: () => void;
   onSetDefault: () => void;
   onHealthCheck: () => void;
@@ -2053,11 +2055,11 @@ function ProviderVaultCard({
           variant="outline"
           size="sm"
           className="text-destructive hover:text-destructive"
-          onClick={onDisable}
+          onClick={on{t("secrets.actions.disable")}}
           disabled={pending || config.status === "disabled"}
         >
           <Ban className="h-3.5 w-3.5 mr-1" />
-          Disable
+          {t("secrets.actions.disable")}
         </Button>
         <Button
           variant="outline"
@@ -2329,7 +2331,7 @@ function SecretDetailsTab({
         <span>{secret.description ?? <span className="text-muted-foreground">—</span>}</span>
       </DetailRow>
       <DetailRow label="Custody">{modeLabel(secret.managedMode)}</DetailRow>
-      <DetailRow label="Provider">{secret.provider.replaceAll("_", " ")}</DetailRow>
+      <DetailRow label=t("secrets.filters.provider")>{secret.provider.replaceAll("_", " ")}</DetailRow>
       <DetailRow label="Provider vault">{providerVaultLabel(providerConfigs, secret.providerConfigId)}</DetailRow>
       <DetailRow label="Latest version">v{secret.latestVersion}</DetailRow>
       <DetailRow label="Created">{formatRelative(secret.createdAt)}</DetailRow>

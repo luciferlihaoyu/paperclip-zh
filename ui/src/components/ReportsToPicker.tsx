@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useState } from "react";
 import type { Agent } from "@paperclipai/shared";
 import {
@@ -11,13 +12,14 @@ import { roleLabels } from "./agent-config-primitives";
 import { AgentIcon } from "./AgentIconPicker";
 
 export function ReportsToPicker({
+  const { t } = useTranslation();
   agents,
   value,
   onChange,
   disabled = false,
   excludeAgentIds = [],
-  disabledEmptyLabel = "Reports to: N/A (CEO)",
-  chooseLabel = "Reports to...",
+  disabledEmptyLabel = t("components.ReportsToPicker.na"),
+  chooseLabel = t("components.ReportsToPicker.choose"),
 }: {
   agents: Agent[];
   value: string | null;

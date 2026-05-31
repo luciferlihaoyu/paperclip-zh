@@ -147,7 +147,7 @@ function ordinalSuffix(n: number): string {
 export { describeSchedule };
 
 export function ScheduleEditor({
-  value,
+    value,
   onChange,
 }: {
   value: string;

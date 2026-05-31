@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import {
   type ClipboardEvent,
   forwardRef,
@@ -217,11 +218,11 @@ const MAX_AUTOCOMPLETE_OPTIONS = 50;
 const MENTION_MENU_CARET_GAP = 10;
 
 const CODE_BLOCK_LANGUAGES: Record<string, string> = {
-  txt: "Text",
-  md: "Markdown",
-  js: "JavaScript",
-  jsx: "JavaScript (JSX)",
-  ts: "TypeScript",
+  txt: t("components.MarkdownEditor.text"),
+  md: t("components.MarkdownEditor.markdown"),
+  js: t("components.MarkdownEditor.javascript"),
+  jsx: t("components.MarkdownEditor.jsx"),
+  ts: t("components.MarkdownEditor.typescript"),
   tsx: "TypeScript (TSX)",
   json: "JSON",
   bash: "Bash",

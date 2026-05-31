@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@/lib/router";
@@ -74,7 +75,7 @@ export function NewAgentDialog() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch existing agents for the "Ask CEO" flow
+  // Fetch existing agents for the t("common.buttons.search") flow
   const { data: agents } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
     queryFn: () => agentsApi.list(selectedCompanyId!),
@@ -119,7 +120,7 @@ export function NewAgentDialog() {
     closeNewAgent();
     openNewIssue({
       assigneeAgentId: ceoAgent?.id,
-      title: "Create a new agent",
+      title: t("components.NewAgentDialog.createAgent"),
       description: "(type in what kind of agent you want here)",
     });
   }
@@ -149,7 +150,7 @@ export function NewAgentDialog() {
     }
 
     pushToast({
-      title: "Clipboard unavailable",
+      title: t("components.NewAgentDialog.clipboardUnavailable"),
       body: unavailableBody,
       tone: "warn",
     });
@@ -195,11 +196,11 @@ export function NewAgentDialog() {
       setLatestAgentPrompt(prompt);
       setLatestAgentPromptCopied(false);
       setMode("prompt");
-      const copied = await copyText(prompt, "Copy the agent onboarding prompt manually from the field below.");
+      const copied = await copyText(prompt, t("components.NewAgentDialog.copyPrompt"));
 
       await queryClient.invalidateQueries({ queryKey: inviteHistoryQueryKey });
       pushToast({
-        title: "Agent invite created",
+        title: t("components.NewAgentDialog.agentInviteCreated"),
         body: copied ? "Agent onboarding prompt ready below and copied to clipboard." : "Agent onboarding prompt ready below.",
         tone: "success",
       });

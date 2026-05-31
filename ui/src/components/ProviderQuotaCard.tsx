@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useMemo } from "react";
 import type { CostByProviderModel, CostWindowSpendRow, QuotaWindow } from "@paperclipai/shared";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -36,6 +37,7 @@ interface ProviderQuotaCardProps {
 }
 
 export function ProviderQuotaCard({
+  const { t } = useTranslation();
   provider,
   rows,
   budgetMonthlyCents,
@@ -162,14 +164,14 @@ export function ProviderQuotaCard({
         {hasBudget && (
           <div className="space-y-3">
             <QuotaBar
-              label="Period spend"
+              label={t("components.ProviderQuotaCard.periodSpend")}
               percentUsed={budgetPct}
               leftLabel={formatCents(totalCostCents)}
               rightLabel={`${Math.round(budgetPct)}% of allocation`}
               showDeficitNotch={showDeficitNotch}
             />
             <QuotaBar
-              label="This week"
+              label={t("components.ProviderQuotaCard.thisWeek")}
               percentUsed={weekPct}
               leftLabel={formatCents(weekSpendCents)}
               rightLabel={`~${formatCents(Math.round(weeklyBudgetShare))} / wk`}

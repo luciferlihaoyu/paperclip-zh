@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import {
   Inbox,
   CircleDot,
@@ -62,8 +63,8 @@ export function Sidebar() {
           variant="ghost"
           size="icon-sm"
           className="text-muted-foreground shrink-0"
-          aria-label="Open search"
-          title="Open search"
+          aria-label={t("components.Sidebar.openSearch")}
+          title={t("components.Sidebar.openSearch")}
         >
           <NavLink to="/search">
             <Search className="h-4 w-4" />
@@ -82,10 +83,10 @@ export function Sidebar() {
             <SquarePen className="h-4 w-4 shrink-0" />
             <span className="truncate">New Issue</span>
           </button>
-          <SidebarNavItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} liveCount={liveRunCount} />
+          <SidebarNavItem to="/dashboard" label={t("components.Sidebar.dashboard")} icon={LayoutDashboard} liveCount={liveRunCount} />
           <SidebarNavItem
             to="/inbox"
-            label="Inbox"
+            label={t("components.Sidebar.inbox")}
             icon={Inbox}
             badge={inboxBadge.inbox}
             badgeTone={inboxBadge.failedRuns > 0 ? "danger" : "default"}
@@ -93,10 +94,10 @@ export function Sidebar() {
           />
         </div>
 
-        <SidebarSection label="Work">
-          <SidebarNavItem to="/issues" label="Issues" icon={CircleDot} />
-          <SidebarNavItem to="/routines" label="Routines" icon={Repeat} />
-          <SidebarNavItem to="/goals" label="Goals" icon={Target} />
+        <SidebarSection label={t("components.Sidebar.work")}>
+          <SidebarNavItem to="/issues" label={t("components.Sidebar.issues")} icon={CircleDot} />
+          <SidebarNavItem to="/routines" label={t("components.Sidebar.routines")} icon={Repeat} />
+          <SidebarNavItem to="/goals" label={t("components.Sidebar.goals")} icon={Target} />
           {showWorkspacesLink ? (
             <SidebarNavItem to="/workspaces" label="Workspaces" icon={GitBranch} />
           ) : null}

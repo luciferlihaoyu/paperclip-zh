@@ -27,6 +27,7 @@ import {
 } from "../hooks/useResourceMemberships";
 
 import { getAdapterLabel } from "../adapters/adapter-display-registry";
+import { useTranslation } from "@/i18n";
 
 const roleLabels = AGENT_ROLE_LABELS as Record<string, string>;
 
@@ -70,6 +71,7 @@ export function Agents() {
   const { selectedCompanyId } = useCompany();
   const { openNewAgent } = useDialogActions();
   const { setBreadcrumbs } = useBreadcrumbs();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useSidebar();
@@ -124,11 +126,11 @@ export function Agents() {
   }, [agents]);
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Agents" }]);
+    setBreadcrumbs([{ label: t("agents.title") }]);
   }, [setBreadcrumbs]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Bot} message="Select a company to view agents." />;
+    return <EmptyState icon={Bot} message={t("agents.empty.noCompany")} />;
   }
 
   if (isLoading) {
@@ -144,10 +146,10 @@ export function Agents() {
         <Tabs value={tab} onValueChange={(v) => navigate(`/agents/${v}`)}>
           <PageTabBar
             items={[
-              { value: "all", label: "All" },
-              { value: "active", label: "Active" },
-              { value: "paused", label: "Paused" },
-              { value: "error", label: "Error" },
+              { value: "all", label: t("agents.filters.all") },
+              { value: "active", label: t("agents.filters.active") },
+              { value: "paused", label: t("agents.filters.paused") },
+              { value: "error", label: t("agents.filters.error") },
             ]}
             value={tab}
             onValueChange={(v) => navigate(`/agents/${v}`)}
@@ -215,7 +217,7 @@ export function Agents() {
       </div>
 
       {filtered.length > 0 && (
-        <p className="text-xs text-muted-foreground">{filtered.length} agent{filtered.length !== 1 ? "s" : ""}</p>
+        <p className="text-xs text-muted-foreground">{filtered.length}{filtered.length !== 1 ? t("agents.countPlural") : t("agents.count")}</p>
       )}
 
       {error && <p className="text-sm text-destructive">{error.message}</p>}
@@ -223,8 +225,8 @@ export function Agents() {
       {agents && agents.length === 0 && (
         <EmptyState
           icon={Bot}
-          message="Create your first agent to get started."
-          action="New Agent"
+          message={t("agents.empty.noAgents")}
+          action={t("agents.empty.newAgent")}
           onAction={openNewAgent}
         />
       )}
@@ -326,7 +328,7 @@ export function Agents() {
 
       {effectiveView === "list" && agents && agents.length > 0 && filtered.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">
-          No agents match the selected filter.
+          {t("common.labels.noAgentsMatch")}
         </p>
       )}
 
@@ -350,13 +352,13 @@ export function Agents() {
 
       {effectiveView === "org" && orgTree && orgTree.length > 0 && filteredOrg.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">
-          No agents match the selected filter.
+          {t("common.labels.noAgentsMatch")}
         </p>
       )}
 
       {effectiveView === "org" && orgTree && orgTree.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">
-          No organizational hierarchy defined.
+          {t("agents.empty.noOrgHierarchy")}
         </p>
       )}
     </div>

@@ -21,7 +21,8 @@ interface PriorityIconProps {
   showLabel?: boolean;
 }
 
-export function PriorityIcon({ priority, onChange, className, showLabel }: PriorityIconProps) {
+export function PriorityIcon({
+  const { t } = useTranslation(); priority, onChange, className, showLabel }: PriorityIconProps) {
   const [open, setOpen] = useState(false);
   const config = priorityConfig[priority] ?? priorityConfig.medium!;
   const Icon = config.icon;

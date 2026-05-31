@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import {
   useEffect,
   useLayoutEffect,
@@ -57,11 +58,12 @@ function useResponsiveCollapsedHeight(explicit?: number) {
 }
 
 export function FoldCurtain({
+  const { t } = useTranslation();
   children,
   collapsedHeight: explicitCollapsedHeight,
   activationBuffer = 120,
-  moreLabel = "Show more",
-  lessLabel = "Show less",
+  moreLabel = t("components.FoldCurtain.showMore"),
+  lessLabel = t("components.FoldCurtain.showLess"),
   className,
   contentClassName,
 }: FoldCurtainProps) {

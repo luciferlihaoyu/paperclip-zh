@@ -14,6 +14,7 @@ import { useRetryNowMutation } from "../hooks/useRetryNowMutation";
 import { IssueLinkQuicklook } from "./IssueLinkQuicklook";
 import { RetryErrorBand } from "./IssueScheduledRetryCard";
 import { isAssignedBacklogBlocker } from "../lib/issue-blockers";
+import { useTranslation } from "@/i18n";
 import {
   deriveActiveRecoveryDisplayState,
   RECOVERY_CHIP_DEFAULT_TONE,
@@ -82,7 +83,7 @@ function SuccessfulRunRetryNowControl({
           ) : success ? (
             <span className="inline-flex items-center gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-              {retryNow.data?.outcome === "already_promoted" ? "Already promoted" : "Promoted"}
+              {retryNow.data?.outcome === "already_promoted" ? t("components.issueBlockedNotice.alreadyPromoted") : t("components.issueBlockedNotice.promoted")}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5">
@@ -205,7 +206,7 @@ export function IssueBlockedNotice({
         <div className="min-w-0 space-y-1.5">
           {showSuccessfulRunHandoff ? (
             <>
-              <p className="font-medium leading-5">This issue still needs a next step.</p>
+              <p className="font-medium leading-5">{t("components.issueBlockedNotice.needsNextStep")}</p>
               <p className="leading-5">
                 A run finished successfully, but this issue is still open in{" "}
                 <code className="rounded bg-amber-100 px-1 py-0.5 text-[12px] dark:bg-amber-400/15">
@@ -214,10 +215,10 @@ export function IssueBlockedNotice({
                 with no clear owner for the next action.
               </p>
               <ul className="list-disc space-y-1 pl-5 text-xs leading-5 text-amber-900 dark:text-amber-100">
-                <li>Mark it done or cancelled.</li>
-                <li>Send it for review or ask for input.</li>
-                <li>Mark it blocked with a blocker owner.</li>
-                <li>Delegate follow-up work or queue a continuation.</li>
+                <li>{t("components.issueBlockedNotice.markDone")}</li>
+                <li>{t("components.issueBlockedNotice.sendForReview")}</li>
+                <li>{t("components.issueBlockedNotice.markBlocked")}</li>
+                <li>{t("components.issueBlockedNotice.delegate")}</li>
               </ul>
               <div className="flex flex-wrap gap-1.5 text-xs">
                 {successfulRunHandoff.sourceRunId && successfulRunHandoff.assigneeAgentId ? (

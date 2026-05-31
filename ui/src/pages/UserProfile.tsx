@@ -10,6 +10,7 @@ import { PageSkeleton } from "../components/PageSkeleton";
 import { StatusBadge } from "../components/StatusBadge";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { queryKeys } from "../lib/queryKeys";
 import {
   formatCents,
@@ -60,10 +61,10 @@ function WindowColumn({ stats }: { stats: UserProfileWindowStats }) {
       </div>
 
       <div className="grid grid-cols-2 gap-x-5 gap-y-3">
-        <Metric value={formatNumber(stats.touchedIssues)} label="Touched" />
-        <Metric value={formatNumber(stats.completedIssues)} label="Completed" />
+        <Metric value={formatNumber(stats.touchedIssues)} label=t("userProfile.window.touched") />
+        <Metric value={formatNumber(stats.completedIssues)} label=t("userProfile.stats.completed") />
         <Metric value={formatNumber(stats.commentCount)} label="Comments" />
-        <Metric value={formatNumber(stats.activityCount)} label="Actions" />
+        <Metric value={formatNumber(stats.activityCount)} label=t("userProfile.window.actions") />
       </div>
 
       <div className="grid grid-cols-2 gap-x-5 gap-y-1.5 pt-3 text-xs tabular-nums text-muted-foreground">
@@ -197,6 +198,7 @@ function UsageList({
 export function UserProfile() {
   const { userSlug = "" } = useParams<{ userSlug: string }>();
   const { selectedCompanyId } = useCompany();
+  const { t } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumbs();
   const companyId = selectedCompanyId ?? NO_COMPANY;
 
@@ -207,7 +209,7 @@ export function UserProfile() {
   });
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Users" }, { label: data?.user.name ?? userSlug }]);
+    setBreadcrumbs([{ label: t("userProfile.title") }, { label: data?.user.name ?? userSlug }]);
   }, [data?.user.name, setBreadcrumbs, userSlug]);
 
   const allTime = data?.stats.find((entry) => entry.key === "all");
@@ -219,7 +221,7 @@ export function UserProfile() {
       (data?.topAgents ?? []).map((row) => ({
         key: row.agentId ?? "unknown",
         label: row.agentName ?? (row.agentId ? row.agentId.slice(0, 8) : "unknown"),
-        sublabel: "Issue-linked usage",
+        sublabel: t("userProfile.sections.issueLinked"),
         costCents: row.costCents,
         inputTokens: row.inputTokens,
         cachedInputTokens: row.cachedInputTokens,
@@ -243,7 +245,7 @@ export function UserProfile() {
   );
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={UserRound} message="Select a company to view user profiles." />;
+    return <EmptyState icon={UserRound} message={t("userProfile.empty.noCompany")} />;
   }
 
   if (isLoading) {
@@ -251,12 +253,12 @@ export function UserProfile() {
   }
 
   if (error || !data) {
-    return <EmptyState icon={AlertCircle} message="User profile not found for this company." />;
+    return <EmptyState icon={AlertCircle} message={t("userProfile.empty.notFound")} />;
   }
 
   const allTimeTokens = allTime ? totalTokens(allTime) : 0;
   const metaParts = [
-    data.user.membershipRole ?? "member",
+    data.user.membershipRole ?? t("userProfile.meta.member"),
     data.user.membershipStatus,
     `joined ${formatDate(data.user.joinedAt)}`,
   ];
@@ -283,10 +285,10 @@ export function UserProfile() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <HeroStat label="All-time tokens" value={formatTokens(allTimeTokens)} hint={formatCents(allTime?.costCents ?? 0) + " spent"} />
-          <HeroStat label="Completed" value={formatNumber(allTime?.completedIssues ?? 0)} hint={allTime ? `${completionRate(allTime)} rate` : undefined} />
-          <HeroStat label="Open assigned" value={formatNumber(allTime?.assignedOpenIssues ?? 0)} hint={`${formatNumber(allTime?.createdIssues ?? 0)} created`} />
-          <HeroStat label="7-day actions" value={formatNumber(last7?.activityCount ?? 0)} hint={`${formatNumber(last7?.commentCount ?? 0)} comments`} />
+          <HeroStat label=t("userProfile.stats.allTimeTokens") value={formatTokens(allTimeTokens)} hint={formatCents(allTime?.costCents ?? 0) + {t("userProfile.stats.spent")}} />
+          <HeroStat label=t("userProfile.stats.completed") value={formatNumber(allTime?.completedIssues ?? 0)} hint={allTime ? `${completionRate(allTime)} rate` : undefined} />
+          <HeroStat label=t("userProfile.stats.openAssigned") value={formatNumber(allTime?.assignedOpenIssues ?? 0)} hint={`${formatNumber(allTime?.createdIssues ?? 0)} created`} />
+          <HeroStat label=t("userProfile.stats.7dayActions") value={formatNumber(last7?.activityCount ?? 0)} hint={`${formatNumber(last7?.commentCount ?? 0)} comments`} />
         </div>
       </section>
 
@@ -351,8 +353,8 @@ export function UserProfile() {
       </div>
 
       <div className="grid gap-10 xl:grid-cols-2">
-        <UsageList title="Agent attribution" empty="No issue-linked token usage yet." rows={agentUsageRows} />
-        <UsageList title="Provider mix" empty="No provider usage attributed yet." rows={providerUsageRows} />
+        <UsageList title=t("userProfile.sections.agentAttribution") empty=t("userProfile.sections.empty.noAgentUsage") rows={agentUsageRows} />
+        <UsageList title=t("userProfile.sections.providerMix") empty=t("userProfile.sections.empty.noProviderUsage") rows={providerUsageRows} />
       </div>
     </div>
   );

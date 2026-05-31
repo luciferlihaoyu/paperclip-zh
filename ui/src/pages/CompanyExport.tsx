@@ -28,6 +28,7 @@ import { useAgentOrder } from "../hooks/useAgentOrder";
 import { useProjectOrder } from "../hooks/useProjectOrder";
 import { buildPortableSidebarOrder } from "../lib/company-portability-sidebar";
 import { getPortableFileDataUrl, getPortableFileText, isPortableImageFile } from "../lib/portable-files";
+import { useTranslation } from "@/i18n";
 import {
   Download,
   Package,
@@ -500,7 +501,7 @@ function ExportPreviewPane({
 }) {
   if (!selectedFile || content === null) {
     return (
-      <EmptyState icon={Package} message="Select a file to preview its contents." />
+      <EmptyState icon={Package} message={t("companyExport.selectFile")} />
     );
   }
 
@@ -578,6 +579,7 @@ function expandAncestors(filePath: string): string[] {
 }
 
 export function CompanyExport() {
+  const { t } = useTranslation();
   const { selectedCompanyId, selectedCompany } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const { pushToast } = useToastActions();
@@ -911,7 +913,7 @@ export function CompanyExport() {
   }
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Package} message="Select a company to export." />;
+    return <EmptyState icon={Package} message={t("companyExport.selectCompany")} />;
   }
 
   if (exportPreviewMutation.isPending && !exportData) {
@@ -919,7 +921,7 @@ export function CompanyExport() {
   }
 
   if (!exportData) {
-    return <EmptyState icon={Package} message="Loading export data..." />;
+    return <EmptyState icon={Package} message={t("companyExport.loading")} />;
   }
 
   const previewContent = selectedFile
@@ -981,7 +983,7 @@ export function CompanyExport() {
                 type="text"
                 value={treeSearch}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search files..."
+                placeholder={t("companyExport.searchFiles")}
                 className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 data-page-search-target="true"
               />

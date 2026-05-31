@@ -7,6 +7,7 @@ import { agentsApi } from "../api/agents";
 import { buildCompanyUserProfileMap } from "../lib/company-members";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
+import { useTranslation } from "@/i18n";
 import { queryKeys } from "../lib/queryKeys";
 import { EmptyState } from "../components/EmptyState";
 import { ActivityRow } from "../components/ActivityRow";
@@ -46,11 +47,12 @@ function activityEntityTitle(event: ActivityEvent) {
 export function Activity() {
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
+  const { t } = useTranslation();
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     setBreadcrumbs([{ label: "Activity" }]);
-  }, [setBreadcrumbs]);
+  }, [setBreadcrumbs, t]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: [...queryKeys.activity(selectedCompanyId!), { limit: ACTIVITY_PAGE_LIMIT }],
@@ -101,7 +103,7 @@ export function Activity() {
   }, [data]);
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={History} message="Select a company to view activity." />;
+    return <EmptyState icon={History} message={t("activity.selectCompany")} />;
   }
 
   if (isLoading) {
@@ -122,10 +124,10 @@ export function Activity() {
       <div className="flex items-center justify-end">
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-[140px] h-8 text-xs">
-            <SelectValue placeholder="Filter by type" />
+            <SelectValue placeholder={t("activity.filterByType")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
+            <SelectItem value="all">{t("activity.allTypes")}</SelectItem>
             {entityTypes.map((type) => (
               <SelectItem key={type} value={type}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -138,7 +140,7 @@ export function Activity() {
       {error && <p className="text-sm text-destructive">{error.message}</p>}
 
       {filtered && filtered.length === 0 && (
-        <EmptyState icon={History} message="No activity yet." />
+        <EmptyState icon={History} message={t("activity.noActivity")} />
       )}
 
       {filtered && filtered.length > 0 && (

@@ -6,6 +6,7 @@ import type {
 } from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 import {
   buildAnchorFromContainerSelection,
   getContainerTextOffset,
@@ -446,7 +447,7 @@ export function DocumentAnnotationLayer({
                 data-anchor-state={rect.anchorState}
                 data-status={rect.status}
                 data-focused={isFocused || undefined}
-                aria-label="Open annotation thread"
+                aria-label={t("components.documentAnnotationLayer.openThread")}
                 className={cn(
                   "paperclip-doc-annotation-hit-target pointer-events-auto absolute cursor-pointer rounded-none bg-transparent",
                   isFocused && "ring-1 ring-transparent",
@@ -477,7 +478,7 @@ export function DocumentAnnotationLayer({
                   width: 16,
                   height: 16,
                 }}
-                title="Anchor moved — needs review"
+                title={t("components.documentAnnotationLayer.anchorMoved")}
               >
                 <AlertTriangle className="h-3 w-3" />
               </span>
@@ -487,7 +488,7 @@ export function DocumentAnnotationLayer({
             <div
               data-testid="document-annotation-selection-toolbar"
               role="toolbar"
-              aria-label="Selection actions"
+              aria-label={t("components.documentAnnotationLayer.selectionActions")}
               className="paperclip-doc-annotation-selection-toolbar pointer-events-auto absolute z-10 flex items-center gap-1 rounded-md border border-border bg-popover px-1 py-1 shadow-md"
               style={{ top: toolbarPosition.top, left: toolbarPosition.left }}
               onMouseDown={(event) => event.preventDefault()}

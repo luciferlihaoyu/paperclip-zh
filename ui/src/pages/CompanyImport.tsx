@@ -47,6 +47,7 @@ import {
 } from "../components/FileTree";
 import { readZipArchive } from "../lib/zip";
 import { getPortableFileDataUrl, getPortableFileText, isPortableImageFile } from "../lib/portable-files";
+import { useTranslation } from "@/i18n";
 
 // ── Import-specific helpers ───────────────────────────────────────────
 
@@ -93,7 +94,7 @@ function buildActionMap(preview: CompanyPortabilityPreviewResult): Map<string, s
   // Company file
   if (manifest.company) {
     const path = ensureMarkdownPath(manifest.company.path);
-    map.set(path, preview.plan.companyAction === "none" ? "skip" : preview.plan.companyAction);
+    map.set(path, preview.plan.companyAction === "none" ? t("companyImport.skip") : preview.plan.companyAction);
   }
 
   return map;
@@ -154,7 +155,7 @@ function renderImportFileExtra(node: FileTreeNode, checked: boolean, renameMap: 
       "shrink-0 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide",
       ACTION_COLORS[node.action] ?? ACTION_COLORS.skip,
     )}>
-      {checked ? node.action : "skip"}
+      {checked ? node.action : t("companyImport.skip")}
     </span>
   ) : null;
 
@@ -193,7 +194,7 @@ function ImportPreviewPane({
 }) {
   if (!selectedFile || content === null) {
     return (
-      <EmptyState icon={Package} message="Select a file to preview its contents." />
+      <EmptyState icon={Package} message={t("companyImport.selectFile")} />
     );
   }
 
@@ -442,7 +443,7 @@ function ConflictResolutionList({
                   )}
                   onClick={() => onToggleSkip(item.slug, item.filePath)}
                 >
-                  {isSkipped ? "skipped" : "skip"}
+                  {isSkipped ? t("companyImport.skipped") : t("companyImport.skip")}
                 </button>
 
                 <span className={cn(
@@ -498,7 +499,7 @@ function ConflictResolutionList({
                         confirmed
                       </>
                     ) : (
-                      "confirm rename"
+                      t("companyImport.confirmRename")
                     )}
                   </button>
                 )}
@@ -645,6 +646,7 @@ async function readLocalPackageZip(file: File): Promise<{
 // ── Main page ─────────────────────────────────────────────────────────
 
 export function CompanyImport() {
+  const { t } = useTranslation();
   const {
     selectedCompanyId,
     selectedCompany,
@@ -1086,7 +1088,7 @@ export function CompanyImport() {
   const selectedAction = selectedFile ? (actionMap.get(selectedFile) ?? null) : null;
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Download} message="Select a company to import into." />;
+    return <EmptyState icon={Download} message={t("companyImport.selectCompany")} />;
   }
 
   return (
@@ -1103,8 +1105,8 @@ export function CompanyImport() {
         <div className="grid gap-2 md:grid-cols-2">
           {(
             [
-              { key: "github", icon: Github, label: "GitHub repo" },
-              { key: "local", icon: Upload, label: "Local zip" },
+              { key: "github", icon: Github, label: t("companyImport.githubRepo") },
+              { key: "local", icon: Upload, label: t("companyImport.localZip") },
             ] as const
           ).map(({ key, icon: Icon, label }) => (
             <button
@@ -1162,8 +1164,8 @@ export function CompanyImport() {
           </div>
         ) : (
           <Field
-            label="GitHub URL"
-            hint="Repo tree path or blob URL to COMPANY.md (e.g. github.com/owner/repo/tree/main/company)."
+            label={t("companyImport.githubUrl")}
+            hint={t("companyImport.githubUrlHint")}
           >
             <input
               className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
@@ -1178,7 +1180,7 @@ export function CompanyImport() {
           </Field>
         )}
 
-        <Field label="Target" hint="Import into this company or create a new one.">
+        <Field label={t("companyImport.target")} hint={t("companyImport.targetHint")}>
           <select
             className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
             value={targetMode}
@@ -1196,22 +1198,22 @@ export function CompanyImport() {
 
         {targetMode === "new" && (
           <Field
-            label="New company name"
-            hint="Optional override. Leave blank to use the package name."
+            label={t("companyImport.newCompanyName")}
+            hint={t("companyImport.newCompanyNameHint")}
           >
             <input
               className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
               type="text"
               value={newCompanyName}
               onChange={(e) => setNewCompanyName(e.target.value)}
-              placeholder="Imported Company"
+              placeholder={t("companyImport.importedCompany")}
             />
           </Field>
         )}
 
         <Field
-          label="Collision strategy"
-          hint="Board imports can rename, skip, or replace matching company content."
+          label={t("companyImport.collisionStrategy")}
+          hint={t("companyImport.collisionStrategyHint")}
         >
           <select
             className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none"
@@ -1222,7 +1224,7 @@ export function CompanyImport() {
             }}
           >
             <option value="rename">Rename on conflict</option>
-            <option value="skip">Skip on conflict</option>
+            <option value={t("companyImport.skip")}>Skip on conflict</option>
             <option value="replace">Replace existing</option>
           </select>
         </Field>
@@ -1234,7 +1236,7 @@ export function CompanyImport() {
             onClick={() => previewMutation.mutate()}
             disabled={previewMutation.isPending || !hasSource}
           >
-            {previewMutation.isPending ? "Previewing..." : "Preview import"}
+            {previewMutation.isPending ? t("companyImport.previewing") : t("companyImport.previewImport")}
           </Button>
         </div>
       </div>
@@ -1295,7 +1297,7 @@ export function CompanyImport() {
             >
               <Download className="mr-1.5 h-3.5 w-3.5" />
               {importMutation.isPending
-                ? "Importing..."
+                ? t("companyImport.importing")
                 : `Import ${selectedCount} file${selectedCount === 1 ? "" : "s"}`}
             </Button>
           </div>

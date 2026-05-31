@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, CloudUpload, KeyRound, MailPlus, MonitorCog, Puzzle, Settings, SlidersHorizontal, Users } from "lucide-react";
 import { sidebarBadgesApi } from "@/api/sidebarBadges";
@@ -65,24 +66,24 @@ export function CompanySettingsSidebar() {
 
       <nav className="flex-1 min-h-0 overflow-y-auto scrollbar-auto-hide px-3 py-2">
         <div className="flex flex-col gap-0.5">
-          <SidebarNavItem to="/company/settings" label="General" icon={SlidersHorizontal} end />
+          <SidebarNavItem to="/company/settings" label={t("components.CompanySettingsSidebar.general")} icon={SlidersHorizontal} end />
           <SidebarNavItem
             to="/company/settings/environments"
-            label="Environments"
+            label={t("components.CompanySettingsSidebar.environments")}
             icon={MonitorCog}
             end
           />
           {showCloudUpstream ? (
             <SidebarNavItem
               to="/company/settings/cloud-upstream"
-              label="Cloud upstream"
+              label={t("components.CompanySettingsSidebar.cloudUpstream")}
               icon={CloudUpload}
               end
             />
           ) : null}
           <SidebarNavItem
             to="/company/settings/members"
-            label="Members"
+            label={t("components.CompanySettingsSidebar.members")}
             icon={Users}
             badge={badges?.joinRequests ?? 0}
             end
@@ -98,8 +99,8 @@ export function CompanySettingsSidebar() {
                 end
               />
             ))}
-          <SidebarNavItem to="/company/settings/invites" label="Invites" icon={MailPlus} end />
-          <SidebarNavItem to="/company/settings/secrets" label="Secrets" icon={KeyRound} end />
+          <SidebarNavItem to="/company/settings/invites" label={t("components.CompanySettingsSidebar.invites")} icon={MailPlus} end />
+          <SidebarNavItem to="/company/settings/secrets" label={t("components.CompanySettingsSidebar.secrets")} icon={KeyRound} end />
         </div>
       </nav>
     </aside>

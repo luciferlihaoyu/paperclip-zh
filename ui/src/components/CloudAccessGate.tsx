@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import { accessApi } from "@/api/access";
 import { ApiError } from "@/api/client";
 import { authApi } from "@/api/auth";
@@ -11,7 +12,7 @@ function NoBoardAccessPage() {
   return (
     <div className="mx-auto max-w-xl py-10">
       <div className="rounded-lg border border-border bg-card p-6">
-        <h1 className="text-xl font-semibold">No company access</h1>
+        <h1 className="text-xl font-semibold">{t("components.cloudAccessGate.noCompanyAccess")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           This account is signed in, but it does not have an active company membership or instance-admin access on
           this Paperclip instance.
@@ -83,7 +84,7 @@ export function CloudAccessGate() {
           ? healthQuery.error.message
           : boardAccessQuery.error instanceof Error
             ? boardAccessQuery.error.message
-            : "Failed to load app state"}
+            : t("components.cloudAccessGate.failedToLoad")}
       </div>
     );
   }

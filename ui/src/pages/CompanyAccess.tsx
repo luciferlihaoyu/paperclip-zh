@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useBreadcrumbs } from "@/context/BreadcrumbContext";
 import { useCompany } from "@/context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { useToast } from "@/context/ToastContext";
 import { Link, Navigate } from "@/lib/router";
 import { queryKeys } from "@/lib/queryKeys";
@@ -30,6 +31,7 @@ const reassignmentIssueStatuses = "backlog,todo,in_progress,in_review,blocked,fa
 type EditableMemberStatus = "pending" | "active" | "suspended";
 
 export function CompanyAccess() {
+  const { t } = useTranslation();
   const { selectedCompany, selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const { pushToast } = useToast();
@@ -211,10 +213,10 @@ export function CompanyAccess() {
   if (membersQuery.error) {
     const message =
       membersQuery.error instanceof ApiError && membersQuery.error.status === 403
-        ? "You do not have permission to manage company members."
+        ? {t("companyAccess.permissionDenied")}
         : membersQuery.error instanceof Error
           ? membersQuery.error.message
-          : "Failed to load company members.";
+          : {t("companyAccess.failedToLoad")};
     return <div className="text-sm text-destructive">{message}</div>;
   }
 
@@ -298,8 +300,8 @@ export function CompanyAccess() {
                       : "Invite metadata unavailable"
                   }
                   detail={`Submitted ${new Date(request.createdAt).toLocaleString()}`}
-                  approveLabel="Approve human"
-                  rejectLabel="Reject human"
+                  approveLabel={t("companyAccess.approveHuman")}
+                  rejectLabel={t("companyAccess.rejectHuman")}
                   disabled={joinRequestActionPending}
                   onApprove={() => approveJoinRequestMutation.mutate(request.id)}
                   onReject={() => rejectJoinRequestMutation.mutate(request.id)}
@@ -334,7 +336,7 @@ export function CompanyAccess() {
                   <div className="text-sm">
                     {member.membershipRole
                       ? HUMAN_COMPANY_MEMBERSHIP_ROLE_LABELS[member.membershipRole]
-                      : "Unset"}
+                      : {t("companyAccess.unset")}}
                   </div>
                   <div>
                     <Badge variant={member.status === "active" ? "secondary" : member.status === "suspended" ? "destructive" : "outline"}>
@@ -428,7 +430,7 @@ export function CompanyAccess() {
               }}
               disabled={updateMemberMutation.isPending}
             >
-              {updateMemberMutation.isPending ? "Saving…" : "Save member"}
+              {updateMemberMutation.isPending ? "Saving…" : {t("companyAccess.saveMember")}}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -449,7 +451,7 @@ export function CompanyAccess() {
                 <div className="text-sm text-muted-foreground">{removingMember.user?.email || removingMember.principalId}</div>
                 <div className="mt-2 text-sm text-muted-foreground">
                   {assignedIssuesQuery.isLoading
-                    ? "Checking assigned issues..."
+                    ? {t("companyAccess.checkingAssignedIssues")}
                     : `${assignedIssues.length} open assigned issue${assignedIssues.length === 1 ? "" : "s"}`}
                 </div>
               </div>
@@ -464,7 +466,7 @@ export function CompanyAccess() {
                   >
                     <option value="__unassigned">Leave unassigned</option>
                     {activeReassignmentUsers.length > 0 ? (
-                      <optgroup label="Humans">
+                      <optgroup label={t("companyAccess.humans")}>
                         {activeReassignmentUsers.map((member) => (
                           <option key={member.id} value={`user:${member.principalId}`}>
                             {memberDisplayName(member)}
@@ -473,7 +475,7 @@ export function CompanyAccess() {
                       </optgroup>
                     ) : null}
                     {activeReassignmentAgents.length > 0 ? (
-                      <optgroup label="Agents">
+                      <optgroup label={t("companyAccess.agents")}>
                         {activeReassignmentAgents.map((agent) => (
                           <option key={agent.id} value={`agent:${agent.id}`}>
                             {agent.name} ({agent.role})
@@ -514,7 +516,7 @@ export function CompanyAccess() {
               }}
               disabled={archiveMemberMutation.isPending || assignedIssuesQuery.isLoading}
             >
-              {archiveMemberMutation.isPending ? "Removing..." : "Remove member"}
+              {archiveMemberMutation.isPending ? "Removing..." : {t("companyAccess.removeMember")}}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -584,7 +586,7 @@ export function CompanyAccessLegacyRoute() {
 }
 
 function memberDisplayName(member: CompanyMember | null) {
-  if (!member) return "this member";
+  if (!member) return {t("companyAccess.removeReasonThisMember")};
   return member.user?.name?.trim() || member.user?.email || member.principalId;
 }
 

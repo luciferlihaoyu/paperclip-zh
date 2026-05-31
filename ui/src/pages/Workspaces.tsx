@@ -10,6 +10,7 @@ import { ProjectWorkspacesContent } from "../components/ProjectWorkspacesContent
 import { PageSkeleton } from "../components/PageSkeleton";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { buildProjectWorkspaceSummaries, type ProjectWorkspaceSummary } from "../lib/project-workspaces-tab";
 import { queryKeys } from "../lib/queryKeys";
 import { projectRouteRef } from "../lib/utils";
@@ -73,6 +74,7 @@ function buildProjectWorkspaceGroups(input: {
 
 export function Workspaces() {
   const { selectedCompanyId } = useCompany();
+  const { t } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumbs();
   const experimentalSettingsQuery = useQuery({
     queryKey: queryKeys.instance.experimentalSettings,
@@ -103,7 +105,7 @@ export function Workspaces() {
   });
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Workspaces" }]);
+    setBreadcrumbs([{ label: t("workspaces.title") }]);
   }, [setBreadcrumbs]);
 
   const groups = useMemo(
@@ -121,7 +123,7 @@ export function Workspaces() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold">Workspaces</h2>
+        <h2 className="text-xl font-bold">{t("workspaces.title")}</h2>
       </div>
 
       {groups.length === 0 ? (
@@ -145,7 +147,7 @@ export function Workspaces() {
                   ) : null}
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  {group.summaries.length} workspace{group.summaries.length === 1 ? "" : "s"}
+                  {group.summaries.length} workspace{group.summaries.length === 1 ? "" : t("workspaces.countPlural")}
                 </span>
               </div>
               <ProjectWorkspacesContent

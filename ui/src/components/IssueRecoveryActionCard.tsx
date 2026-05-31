@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { agentUrl } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 import {
   deriveRecoveryDisplayState,
   type RecoveryDisplayState,
@@ -44,10 +45,10 @@ export interface IssueRecoveryActionCardProps {
 }
 
 const KIND_LABEL: Record<IssueRecoveryActionKind, string> = {
-  missing_disposition: "Missing Disposition",
-  stranded_assigned_issue: "Stranded Issue",
-  active_run_watchdog: "Active Watchdog",
-  issue_graph_liveness: "Graph Liveness",
+  missing_disposition: t("components.issueRecoveryActionCard.missingDisposition"),
+  stranded_assigned_issue: t("components.issueRecoveryActionCard.strandedAssigned"),
+  active_run_watchdog: t("components.issueRecoveryActionCard.activeWatchdog"),
+  issue_graph_liveness: t("components.issueRecoveryActionCard.graphLiveness"),
 };
 
 const KIND_HEADLINE: Record<IssueRecoveryActionKind, string> = {
@@ -166,12 +167,12 @@ function readWakePolicySummary(action: IssueRecoveryAction): string | null {
   if (!policy) return null;
   const type = readEvidenceString(policy.type);
   if (!type) return null;
-  if (type === "wake_owner") return "Corrective wake queued";
-  if (type === "board_escalation") return "Escalated to board";
-  if (type === "manual") return "Manual";
+  if (type === "wake_owner") return t("components.issueRecoveryActionCard.correctiveWake");
+  if (type === "board_escalation") return t("components.issueRecoveryActionCard.escalatedToBoard");
+  if (type === "manual") return t("components.issueRecoveryActionCard.manual");
   if (type === "monitor") {
     const interval = readEvidenceString(policy.intervalLabel);
-    return interval ? `Monitor scheduled · ${interval}` : "Monitor scheduled";
+    return interval ? `Monitor scheduled · ${interval}` : t("components.issueRecoveryActionCard.monitorScheduled");
   }
   return type.replaceAll("_", " ");
 }
@@ -295,30 +296,30 @@ const RESOLVE_OPTIONS: Array<{
 }> = [
   {
     outcome: "todo",
-    label: "Try again",
-    description: "Dismiss recovery and return the source issue to todo.",
+    label: t("components.issueRecoveryActionCard.tryAgain"),
+    description: t("components.issueRecoveryActionCard.tryAgainDesc"),
   },
   {
     outcome: "done",
-    label: "Mark issue done",
-    description: "Restore by recording the requested work as complete.",
+    label: t("components.issueRecoveryActionCard.markDone"),
+    description: t("components.issueRecoveryActionCard.markDoneDesc"),
   },
   {
     outcome: "in_review",
-    label: "Send for review",
-    description: "Hand off to a reviewer with a real review path.",
+    label: t("components.issueRecoveryActionCard.sendForReview"),
+    description: t("components.issueRecoveryActionCard.sendForReviewDesc"),
   },
   {
     outcome: "false_positive_done",
-    label: "False positive, done",
-    description: "Dismiss recovery and mark the source issue complete.",
+    label: t("components.issueRecoveryActionCard.falsePositiveDone"),
+    description: t("components.issueRecoveryActionCard.falsePositiveDoneDesc"),
     destructive: true,
     boardOnly: true,
   },
   {
     outcome: "false_positive_in_review",
-    label: "False positive, review",
-    description: "Dismiss recovery and send the source issue for review.",
+    label: t("components.issueRecoveryActionCard.falsePositiveReview"),
+    description: t("components.issueRecoveryActionCard.falsePositiveReviewDesc"),
     destructive: true,
     boardOnly: true,
   },
@@ -416,11 +417,11 @@ export function IssueRecoveryActionCard({
         </div>
       </header>
       <dl className={cn("border-t bg-background/40 dark:bg-background/20", tone.divider)}>
-        <MetadataRow label="Owner">
+        <MetadataRow label={t("components.issueRecoveryActionCard.owner")}>
           <span className="inline-flex flex-wrap items-center gap-1.5">
             {action.ownerType === "agent" && action.ownerAgentId ? (
               <>
-                <span className="text-muted-foreground">Recovery:</span>
+                <span className="text-muted-foreground">{t("components.issueRecoveryActionCard.recovery")}</span>
                 <AgentLink agentId={action.ownerAgentId} agentMap={agentMap} />
               </>
             ) : action.ownerType === "board" ? (
@@ -440,11 +441,11 @@ export function IssueRecoveryActionCard({
             ) : null}
           </span>
         </MetadataRow>
-        <MetadataRow label="Source run">
+        <MetadataRow label={t("components.issueRecoveryActionCard.sourceRun")}>
           <RunChip runId={sourceRunId} agentId={action.previousOwnerAgentId} />
         </MetadataRow>
         {correctiveRunId ? (
-          <MetadataRow label="Corrective run">
+          <MetadataRow label={t("components.issueRecoveryActionCard.correctiveRun")}>
             <RunChip runId={correctiveRunId} agentId={action.previousOwnerAgentId} />
           </MetadataRow>
         ) : null}

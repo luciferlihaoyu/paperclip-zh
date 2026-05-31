@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import type {
   DocumentAnnotationComment,
   DocumentAnnotationThreadStatus,
@@ -32,10 +33,10 @@ import type { CompanyUserProfile } from "@/lib/company-members";
 type AnnotationFilter = "open" | "resolved" | "stale" | "orphan";
 
 const FILTERS: { id: AnnotationFilter; label: string }[] = [
-  { id: "open", label: "Open" },
-  { id: "resolved", label: "Resolved" },
-  { id: "stale", label: "Stale" },
-  { id: "orphan", label: "Orphaned" },
+  { id: "open", label: t("components.documentAnnotationPanel.openFilter") },
+  { id: "resolved", label: t("components.documentAnnotationPanel.resolvedFilter") },
+  { id: "stale", label: t("components.documentAnnotationPanel.staleFilter") },
+  { id: "orphan", label: t("components.documentAnnotationPanel.orphanedFilter") },
 ];
 
 export interface AnnotationPanelProps {

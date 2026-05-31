@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import {
   useCallback,
   useEffect,
@@ -52,6 +53,7 @@ type ResizableSidebarPaneProps = {
 };
 
 export function ResizableSidebarPane({
+  const { t } = useTranslation();
   children,
   open,
   resizable = false,
@@ -151,7 +153,7 @@ export function ResizableSidebarPane({
       {resizable && open ? (
         <div
           role="separator"
-          aria-label="Resize sidebar"
+          aria-label=t("components.ResizableSidebarPane.resizeSidebar")
           aria-orientation="vertical"
           aria-valuemin={MIN_SIDEBAR_WIDTH}
           aria-valuemax={MAX_SIDEBAR_WIDTH}

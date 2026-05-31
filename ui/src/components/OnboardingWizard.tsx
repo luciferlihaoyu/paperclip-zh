@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AdapterEnvironmentTestResult } from "@paperclipai/shared";
@@ -126,7 +127,7 @@ export function OnboardingWizard() {
 
   // Step 3
   const [taskTitle, setTaskTitle] = useState(
-    "Hire your first engineer and create a hiring plan"
+    t("components.OnboardingWizard.hireFirst")
   );
   const [taskDescription, setTaskDescription] = useState(
     DEFAULT_TASK_DESCRIPTION
@@ -301,7 +302,7 @@ export function OnboardingWizard() {
     setAdapterEnvLoading(false);
     setForceUnsetAnthropicApiKey(false);
     setUnsetAnthropicLoading(false);
-    setTaskTitle("Hire your first engineer and create a hiring plan");
+    setTaskTitle(t("components.OnboardingWizard.hireFirst"));
     setTaskDescription(DEFAULT_TASK_DESCRIPTION);
     setCreatedCompanyId(null);
     setCreatedCompanyPrefix(null);
@@ -359,7 +360,7 @@ export function OnboardingWizard() {
   ): Promise<AdapterEnvironmentTestResult | null> {
     if (!createdCompanyId) {
       setAdapterEnvError(
-        "Create or select a company before testing adapter environment."
+        t("components.OnboardingWizard.selectCompanyForTest")
       );
       return null;
     }
@@ -377,7 +378,7 @@ export function OnboardingWizard() {
       return result;
     } catch (err) {
       setAdapterEnvError(
-        err instanceof Error ? err.message : "Adapter environment test failed"
+        err instanceof Error ? err.message : t("components.OnboardingWizard.adapterTestFailed")
       );
       return null;
     } finally {
@@ -415,7 +416,7 @@ export function OnboardingWizard() {
 
       setStep(2);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create company");
+      setError(err instanceof Error ? err.message : t("components.OnboardingWizard.createCompanyFailed"));
     } finally {
       setLoading(false);
     }

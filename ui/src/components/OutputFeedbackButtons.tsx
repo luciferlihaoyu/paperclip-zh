@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect, useState } from "react";
 import type { FeedbackDataSharingPreference, FeedbackVoteValue } from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export function OutputFeedbackButtons({
+  const { t } = useTranslation();
   activeVote,
   disabled = false,
   sharingPreference = "prompt",
@@ -145,7 +147,7 @@ export function OutputFeedbackButtons({
           <Textarea
             value={downvoteReason}
             onChange={(event) => setDownvoteReason(event.target.value)}
-            placeholder="Add a short note"
+            placeholder={t("components.OutputFeedbackButtons.addNote")}
             className="min-h-20 resize-y bg-background"
             disabled={disabled || isSaving}
           />
@@ -174,7 +176,7 @@ export function OutputFeedbackButtons({
                 });
               }}
             >
-              {isSaving ? "Saving..." : "Save note"}
+              {isSaving ? t("components.OutputFeedbackButtons.saving") : t("components.OutputFeedbackButtons.saveNote")}
             </Button>
           </div>
         </div>
@@ -238,7 +240,7 @@ export function OutputFeedbackButtons({
                 );
               }}
             >
-              {isSaving ? "Saving..." : "Don't allow"}
+              {isSaving ? t("components.OutputFeedbackButtons.saving") : t("components.OutputFeedbackButtons.dontAllow")}
             </Button>
             <Button
               type="button"
@@ -258,7 +260,7 @@ export function OutputFeedbackButtons({
                 );
               }}
             >
-              {isSaving ? "Saving..." : "Always allow"}
+              {isSaving ? t("components.OutputFeedbackButtons.saving") : t("components.OutputFeedbackButtons.alwaysAllow")}
             </Button>
           </DialogFooter>
         </DialogContent>

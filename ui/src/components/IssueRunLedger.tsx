@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import type { ActivityEvent, Issue, Agent } from "@paperclipai/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import { Link } from "@/lib/router";
 import { accessApi, type CurrentBoardAccess } from "../api/access";
 import { activityApi, type RunForIssue, type RunLivenessState } from "../api/activity";
@@ -73,58 +74,58 @@ type LivenessCopy = {
 
 const LIVENESS_COPY: Record<RunLivenessState, LivenessCopy> = {
   completed: {
-    label: "Completed",
+    label: t("components.issueRunLedger.completed"),
     tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    description: "Issue reached a terminal state.",
+    description: t("components.issueRunLedger.completedDesc"),
   },
   advanced: {
-    label: "Advanced",
+    label: t("components.issueRunLedger.advanced"),
     tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
-    description: "Run produced concrete evidence of progress.",
+    description: t("components.issueRunLedger.advancedDesc"),
   },
   plan_only: {
-    label: "Plan only",
+    label: t("components.issueRunLedger.planOnly"),
     tone: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    description: "Run described future work without concrete action evidence.",
+    description: t("components.issueRunLedger.planOnlyDesc"),
   },
   empty_response: {
-    label: "Empty response",
+    label: t("components.issueRunLedger.emptyResponse"),
     tone: "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-300",
-    description: "Run finished without useful output.",
+    description: t("components.issueRunLedger.emptyResponseDesc"),
   },
   blocked: {
-    label: "Blocked",
+    label: t("components.issueRunLedger.blocked"),
     tone: "border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300",
-    description: "Run or issue declared a blocker.",
+    description: t("components.issueRunLedger.blockedDesc"),
   },
   failed: {
-    label: "Failed",
+    label: t("components.issueRunLedger.failed"),
     tone: "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300",
-    description: "Run ended unsuccessfully.",
+    description: t("components.issueRunLedger.failedDesc"),
   },
   needs_followup: {
-    label: "Needs follow-up",
+    label: t("components.issueRunLedger.needsFollowUp"),
     tone: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
-    description: "Run produced useful output but did not prove concrete progress.",
+    description: t("components.issueRunLedger.needsFollowUpDesc"),
   },
 };
 
 const PENDING_LIVENESS_COPY: LivenessCopy = {
-  label: "Checks after finish",
+  label: t("components.issueRunLedger.checksAfterFinish"),
   tone: "border-border bg-background text-muted-foreground",
-  description: "Liveness is evaluated after the run finishes.",
+  description: t("components.issueRunLedger.checksAfterFinishDesc"),
 };
 
 const RETRY_PENDING_LIVENESS_COPY: LivenessCopy = {
-  label: "Retry pending",
+  label: t("components.issueRunLedger.retryPending"),
   tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
-  description: "Paperclip queued an automatic retry that has not started yet.",
+  description: t("components.issueRunLedger.retryPendingDesc"),
 };
 
 const MISSING_LIVENESS_COPY: LivenessCopy = {
-  label: "No liveness data",
+  label: t("components.issueRunLedger.noLiveness"),
   tone: "border-border bg-background text-muted-foreground",
-  description: "This run has no persisted liveness classification.",
+  description: t("components.issueRunLedger.noLivenessDesc"),
 };
 
 const TERMINAL_CHILD_STATUSES = new Set<Issue["status"]>(["done", "cancelled"]);
@@ -139,15 +140,15 @@ type RunOutputSilenceCopy = {
 
 const RUN_OUTPUT_SILENCE_COPY: Partial<Record<RunOutputSilenceLevel, RunOutputSilenceCopy>> = {
   suspicious: {
-    label: "Silence watch",
+    label: t("components.issueRunLedger.silenceWatch"),
     tone: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
   },
   critical: {
-    label: "Stale run",
+    label: t("components.issueRunLedger.staleRun"),
     tone: "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300",
   },
   snoozed: {
-    label: "Silence snoozed",
+    label: t("components.issueRunLedger.silenceSnoozed"),
     tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
   },
 };
@@ -325,22 +326,22 @@ function stopReasonLabel(run: RunForIssue) {
 
 function stopStatusLabel(run: LedgerRun, stopReason: string | null) {
   if (stopReason) return stopReason;
-  if (run.status === "scheduled_retry") return "Retry pending";
-  if (run.status === "queued") return "Waiting to start";
-  if (run.status === "running") return "Still running";
-  if (!run.livenessState) return "Unavailable";
-  return "No stop reason";
+  if (run.status === "scheduled_retry") return t("components.issueRunLedger.retryPending");
+  if (run.status === "queued") return t("components.issueRunLedger.waitingToStart");
+  if (run.status === "running") return t("components.issueRunLedger.stillRunning");
+  if (!run.livenessState) return t("components.issueRunLedger.unavailable");
+  return t("components.issueRunLedger.noStopReason");
 }
 
 function lastUsefulActionLabel(run: LedgerRun) {
-  if (run.status === "scheduled_retry") return "Waiting for next attempt";
+  if (run.status === "scheduled_retry") return t("components.issueRunLedger.waitingForNext");
   if (run.lastUsefulActionAt) return relativeTime(run.lastUsefulActionAt);
-  if (isActiveRun(run)) return "No action recorded yet";
+  if (isActiveRun(run)) return t("components.issueRunLedger.noActionRecorded");
   if (run.livenessState === "plan_only" || run.livenessState === "needs_followup") {
     return "No concrete action";
   }
   if (run.livenessState === "empty_response") return "No useful output";
-  if (!run.livenessState) return "Unavailable";
+  if (!run.livenessState) return t("components.issueRunLedger.unavailable");
   return "None recorded";
 }
 

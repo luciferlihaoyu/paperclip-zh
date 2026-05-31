@@ -6,6 +6,7 @@ import { formatMonitorOffset } from "@/lib/issue-monitor";
 import { formatRetryReason } from "@/lib/runRetryState";
 import type { IssueScheduledRetry } from "@paperclipai/shared";
 import { useRetryNowMutation, type RetryNowError } from "../hooks/useRetryNowMutation";
+import { useTranslation } from "@/i18n";
 
 const MAX_TURN_CONTINUATION = "max_turns_continuation";
 
@@ -47,8 +48,8 @@ export function IssueScheduledRetryCard({
       ? scheduledRetry.scheduledRetryAttempt
       : null;
 
-  const badgeLabel = continuation ? "Continuation scheduled" : "Retry scheduled";
-  const titleAction = continuation ? "Automatic continuation" : "Automatic retry";
+  const badgeLabel = continuation ? t("components.issueScheduledRetryCard.continuationScheduled") : t("components.issueScheduledRetryCard.retryScheduled");
+  const titleAction = continuation ? t("components.issueScheduledRetryCard.autoContinuation") : t("components.issueScheduledRetryCard.autoRetry");
   let titleSuffix: string;
   if (relative === "now") {
     titleSuffix = "due now";
@@ -60,8 +61,8 @@ export function IssueScheduledRetryCard({
   const title = `${titleAction} ${titleSuffix}`;
 
   const helperIdle = continuation
-    ? "Pulls continuation forward immediately"
-    : "Pulls retry forward immediately";
+    ? t("components.issueScheduledRetryCard.pullForwardContinuation")
+    : t("components.issueScheduledRetryCard.pullForwardRetry");
   const isError = retryNow.isError || retryNow.lastError !== null;
   const isSuccessTransient = retryNow.isSuccess
     && (retryNow.data?.outcome === "promoted" || retryNow.data?.outcome === "already_promoted");
@@ -79,7 +80,7 @@ export function IssueScheduledRetryCard({
               {badgeLabel}
             </span>
             {attempt !== null ? (
-              <span className="text-muted-foreground">Attempt {attempt}</span>
+              <span className="text-muted-foreground">{t("components.issueScheduledRetryCard.attempt")} {attempt}</span>
             ) : null}
             {reason ? (
               <span className="text-muted-foreground">{reason}</span>
@@ -136,7 +137,7 @@ export function IssueScheduledRetryCard({
             ) : isSuccessTransient ? (
               <span className="inline-flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                {retryNow.data?.outcome === "already_promoted" ? "Already promoted" : "Promoted"}
+                {retryNow.data?.outcome === "already_promoted" ? t("components.issueScheduledRetryCard.alreadyPromoted") : t("components.issueScheduledRetryCard.promoted")}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5">
@@ -147,11 +148,11 @@ export function IssueScheduledRetryCard({
           </Button>
           <span className="text-right text-xs text-muted-foreground sm:max-w-[12rem]">
             {retryNow.isPending
-              ? "Promoting scheduled retry"
+              ? t("components.issueScheduledRetryCard.promotingRetry")
               : isSuccessTransient
                 ? retryNow.data?.outcome === "already_promoted"
-                  ? "Already promoted — run starting"
-                  : "Promoted — run starting"
+                  ? t("components.issueScheduledRetryCard.alreadyPromotedStarting")
+                  : t("components.issueScheduledRetryCard.promotedStarting")
                 : helperIdle}
           </span>
         </div>
@@ -179,7 +180,7 @@ export function RetryErrorBand({ error, onRetry, className }: RetryErrorBandProp
     >
       <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <div className="font-medium">Couldn't retry now</div>
+        <div className="font-medium">{t("components.issueScheduledRetryCard.retryFailed")}</div>
         <div className="mt-0.5 text-muted-foreground">{error.message}</div>
       </div>
       <button

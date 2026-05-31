@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -128,7 +129,8 @@ function SortableCompanyItem({
   );
 }
 
-export function SidebarCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompanyMenuProps = {}) {
+export function SidebarCompanyMenu({
+  const { t } = useTranslation(); open: controlledOpen, onOpenChange }: SidebarCompanyMenuProps = {}) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [isEditingOrder, setIsEditingOrder] = useState(false);
   const queryClient = useQueryClient();
@@ -225,12 +227,12 @@ export function SidebarCompanyMenu({ open: controlledOpen, onOpenChange }: Sideb
         <Button
           variant="ghost"
           className="h-9 flex-1 justify-start gap-2 px-2 text-left"
-          aria-label={selectedCompany ? `Open ${selectedCompany.name} workspace switcher` : "Open workspace switcher"}
+          aria-label={selectedCompany ? `Open ${selectedCompany.name} workspace switcher` : t("components.SidebarCompanyMenu.openSwitcher")}
         >
           <span className="flex min-w-0 flex-1 items-center gap-2">
             {selectedCompany ? <WorkspaceIcon company={selectedCompany} /> : null}
             <span className="truncate text-sm font-bold text-foreground">
-              {selectedCompany?.name ?? "Select workspace"}
+              {selectedCompany?.name ?? t("components.SidebarCompanyMenu.selectWorkspace")}
             </span>
           </span>
           <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
@@ -250,7 +252,7 @@ export function SidebarCompanyMenu({ open: controlledOpen, onOpenChange }: Sideb
             }}
             className="rounded px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            {isEditingOrder ? "Done" : "Edit"}
+            {isEditingOrder ? t("components.SidebarCompanyMenu.done") : t("components.SidebarCompanyMenu.edit")}
           </button>
         </div>
         <div className="max-h-96 overflow-y-auto">
@@ -301,7 +303,7 @@ export function SidebarCompanyMenu({ open: controlledOpen, onOpenChange }: Sideb
           >
             <UserPlus className="size-4" />
             <span className="truncate">
-              {selectedCompany ? `Invite people to ${selectedCompany.name}` : "Invite people"}
+              {selectedCompany ? `Invite people to ${selectedCompany.name}` : t("components.SidebarCompanyMenu.invite")}
             </span>
           </Link>
         </DropdownMenuItem>
@@ -329,7 +331,7 @@ export function SidebarCompanyMenu({ open: controlledOpen, onOpenChange }: Sideb
               disabled={isEditingOrder || signOutMutation.isPending}
             >
               <LogOut className="size-4" />
-              <span>{signOutMutation.isPending ? "Signing out..." : "Sign out"}</span>
+              <span>{signOutMutation.isPending ? t("components.SidebarCompanyMenu.signingOut") : t("components.SidebarCompanyMenu.signOut")}</span>
             </DropdownMenuItem>
           </>
         ) : null}

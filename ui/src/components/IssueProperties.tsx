@@ -3,6 +3,7 @@ import { pickTextColorForPillBg } from "@/lib/color-contrast";
 import { Link } from "@/lib/router";
 import type { Issue, IssueLabel, Project, WorkspaceRuntimeService } from "@paperclipai/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import type { AdapterModel } from "../api/agents";
 import { accessApi } from "../api/access";
 import { agentsApi } from "../api/agents";
@@ -73,7 +74,7 @@ function TruncatedCopyable({ value, icon: Icon }: { value: string; icon: React.C
         type="button"
         className="text-sm font-mono min-w-0 break-all text-left cursor-pointer hover:text-foreground transition-colors"
         onClick={handleCopy}
-        title={copied ? "Copied!" : "Click to copy"}
+        title={copied ? t("components.issueProperties.copied") : t("components.issueProperties.clickToCopy")}
       >
         {value}
       </button>
@@ -158,27 +159,27 @@ function PropertyRow({ label, children }: { label: string; children: React.React
 
 const ISSUE_THINKING_EFFORT_OPTIONS = {
   claude_local: [
-    { value: "", label: "Default" },
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
+    { value: "", label: t("components.issueProperties.default") },
+    { value: "low", label: t("components.issueProperties.low") },
+    { value: "medium", label: t("components.issueProperties.medium") },
+    { value: "high", label: t("components.issueProperties.high") },
   ],
   codex_local: [
-    { value: "", label: "Default" },
-    { value: "minimal", label: "Minimal" },
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-    { value: "xhigh", label: "X-High" },
+    { value: "", label: t("components.issueProperties.default") },
+    { value: "minimal", label: t("components.issueProperties.minimal") },
+    { value: "low", label: t("components.issueProperties.low") },
+    { value: "medium", label: t("components.issueProperties.medium") },
+    { value: "high", label: t("components.issueProperties.high") },
+    { value: "xhigh", label: t("components.issueProperties.xhigh") },
   ],
   opencode_local: [
-    { value: "", label: "Default" },
-    { value: "minimal", label: "Minimal" },
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-    { value: "xhigh", label: "X-High" },
-    { value: "max", label: "Max" },
+    { value: "", label: t("components.issueProperties.default") },
+    { value: "minimal", label: t("components.issueProperties.minimal") },
+    { value: "low", label: t("components.issueProperties.low") },
+    { value: "medium", label: t("components.issueProperties.medium") },
+    { value: "high", label: t("components.issueProperties.high") },
+    { value: "xhigh", label: t("components.issueProperties.xhigh") },
+    { value: "max", label: t("components.issueProperties.max") },
   ],
 } as const;
 
@@ -294,14 +295,14 @@ function RemovableIssueReferencePill({
       <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Remove blocker?</DialogTitle>
+            <DialogTitle>{t("components.issueProperties.removeBlocker")}</DialogTitle>
             <DialogDescription>
               Remove {confirmLabel} as a blocker for this issue.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">Cancel</Button>
+              <Button type="button" variant="outline">{t("components.issueProperties.cancel")}</Button>
             </DialogClose>
             <Button type="button" variant="destructive" onClick={confirmRemove}>
               Remove blocker
@@ -670,7 +671,7 @@ export function IssueProperties({
   };
   const assigneeOptionsTrigger = (() => {
     if (assigneeOverrideLane === "cheap") {
-      return <span className="text-sm">Cheap model</span>;
+      return <span className="text-sm">{t("components.issueProperties.cheapModel")}</span>;
     }
     if (assigneeOverrideLane === "custom") {
       const details = [

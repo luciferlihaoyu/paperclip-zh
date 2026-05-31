@@ -16,7 +16,7 @@ const REVIEW_STATUS_LABELS: Record<string, string> = {
   in_progress: "In progress",
   in_review: "In review",
   blocked: "Blocked",
-  backlog: "Open",
+  backlog: t("components.ProductivityReviewBadge.open"),
 };
 
 export function productivityReviewTriggerLabel(
@@ -27,7 +27,7 @@ export function productivityReviewTriggerLabel(
 }
 
 export function ProductivityReviewBadge({
-  review,
+    review,
   className,
   hideLabel = false,
 }: {

@@ -12,6 +12,7 @@ import {
 import { statusBadge, statusBadgeDefault } from "../lib/status-colors";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
+import { useTranslation } from "@/i18n";
 
 // -- Tree types --------------------------------------------------------------
 
@@ -274,7 +275,7 @@ export function FileTree({
   loading = false,
   error,
   empty,
-  ariaLabel = "Files",
+  ariaLabel = t("components.fileTree.files"),
 }: FileTreeProps) {
   const effectiveCheckedFiles = checkedFiles ?? new Set<string>();
   const visibleNodes = useMemo(
@@ -381,9 +382,9 @@ export function FileTree({
     return (
       <div aria-label={ariaLabel} role="tree" className="p-3">
         <div className="rounded-md border border-dashed border-border px-4 py-8 text-center">
-          <div className="text-sm font-medium">{empty?.title ?? "No files"}</div>
+          <div className="text-sm font-medium">{empty?.title ?? t("components.fileTree.noFiles")}</div>
           <div className="mt-1 text-xs text-muted-foreground">
-            {empty?.description ?? "Files will appear here when they are available."}
+            {empty?.description ?? t("components.fileTree.filesWillAppear")}
           </div>
         </div>
       </div>

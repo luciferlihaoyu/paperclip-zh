@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useNavigate, useSearchParams } from "@/lib/router";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useDialogActions } from "../context/DialogContext";
 import { searchApi } from "../api/search";
@@ -32,11 +33,11 @@ const IDENTIFIER_PATTERN = /^[A-Z]+-\d+$/;
 
 const SCOPE_LABELS: Record<CompanySearchScope, string> = {
   all: "All",
-  issues: "Issues",
-  comments: "Comments",
-  documents: "Documents",
-  agents: "Agents",
-  projects: "Projects",
+  issues: "search.scopes.issues",
+  comments: "search.scopes.comments",
+  documents: "search.scopes.documents",
+  agents: "search.scopes.agents",
+  projects: "search.scopes.projects",
 };
 
 type SubGroupKey = "issues" | "comments" | "documents" | "agents" | "projects";
@@ -44,11 +45,11 @@ type SubGroupKey = "issues" | "comments" | "documents" | "agents" | "projects";
 const SUBGROUP_ORDER: SubGroupKey[] = ["issues", "comments", "documents", "agents", "projects"];
 
 const SUBGROUP_LABELS: Record<SubGroupKey, string> = {
-  issues: "Issues",
-  comments: "Comments",
-  documents: "Documents",
-  agents: "Agents",
-  projects: "Projects",
+  issues: "search.scopes.issues",
+  comments: "search.scopes.comments",
+  documents: "search.scopes.documents",
+  agents: "search.scopes.agents",
+  projects: "search.scopes.projects",
 };
 
 function classifyResult(result: CompanySearchResult): SubGroupKey {
@@ -80,8 +81,8 @@ function isCompanySearchScope(value: string | null): value is CompanySearchScope
 }
 
 function describeScope(scope: CompanySearchScope) {
-  if (scope === "all") return "All scopes";
-  return SCOPE_LABELS[scope];
+  if (scope === "all") return t("search.scopes.allScopes");
+  return t(SCOPE_LABELS[scope] as any);
 }
 
 export function buildSearchUrl(href: string, query: string, scope: CompanySearchScope): string {
@@ -110,6 +111,7 @@ function shapeError(error: unknown): { message: string; status?: number } {
 
 export function Search() {
   const { selectedCompanyId } = useCompany();
+  const { t } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumbs();
   const { openNewIssue } = useDialogActions();
   const navigate = useNavigate();
@@ -128,7 +130,7 @@ export function Search() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Search" }]);
+    setBreadcrumbs([{ label: t("search.breadcrumb") }]);
   }, [setBreadcrumbs]);
 
   useEffect(() => {
@@ -284,7 +286,7 @@ export function Search() {
         value,
         label: (
           <span className="flex items-center">
-            {SCOPE_LABELS[value as CompanySearchScope]}
+            {t(SCOPE_LABELS[value as CompanySearchScope] as any)}
             {count !== null ? pill(count) : null}
           </span>
         ),
@@ -324,7 +326,7 @@ export function Search() {
   return (
     <div className="flex h-full min-h-0 flex-col" data-page="search">
       <div className="border-b border-border px-4 py-3 sm:px-6">
-        <h1 className="sr-only">Search</h1>
+        <h1 className="sr-only">{t("search.title")}</h1>
         <div className="relative">
           <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -342,15 +344,15 @@ export function Search() {
                 }
               }
             }}
-            placeholder="Search issues, comments, documents, agents, projects…"
-            aria-label="Search query"
+            placeholder={t("search.placeholder")}
+            aria-label={t("search.ariaLabel")}
             className="h-10 pl-9 pr-20 text-sm"
           />
           {draftQuery.length > 0 ? (
             <button
               type="button"
               onClick={handleClear}
-              aria-label="Clear search"
+              aria-label={t("search.clearSearch")}
               className="absolute right-12 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:bg-accent/50"
             >
               <X className="h-3.5 w-3.5" />
@@ -452,7 +454,7 @@ function SearchTabContent({
         <div>
           <h2 className="text-lg font-semibold">Type to search company memory.</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Issues, comments, plan documents, agents, projects — same surface, ranked by relevance.
+            {t("search.initial.description")}
           </p>
         </div>
         {recentSearches.length > 0 ? (
@@ -499,17 +501,17 @@ function SearchTabContent({
     return (
       <div className="mx-auto flex w-full max-w-xl flex-col items-center justify-center gap-3 px-4 py-12 text-center">
         <AlertTriangle className="h-10 w-10 text-destructive" aria-hidden />
-        <div className="text-base font-semibold">Couldn’t run that search</div>
+        <div className="text-base font-semibold">t("search.error.title")</div>
         <p className="text-sm text-muted-foreground">
-          {status ? `The server returned ${status}.` : "The request failed."} Your input and filters are still here, so
+          {status ? `The server returned ${status}.` : t("search.error.requestFailed")} Your input and filters are still here, so
           you can retry or fall back to the Issues filter.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Button onClick={refetch} variant="default" size="sm">
-            Retry
+            {t("common.buttons.retry")}
           </Button>
           <Button onClick={navigateIssuesFallback} variant="outline" size="sm">
-            Open Issues filter view
+            {t("search.error.openIssuesFilter")}
           </Button>
         </div>
       </div>
@@ -520,7 +522,7 @@ function SearchTabContent({
     return (
       <div className="flex flex-col gap-2 px-2 py-3 sm:px-4">
         <div className="px-3 text-xs text-muted-foreground" data-testid="search-loading">
-          Searching for &ldquo;{trimmedQuery}&rdquo;…
+          {t("search.loading.searching")} “{trimmedQuery}”…
         </div>
         <div className="flex flex-col">
           <div className="px-3 py-2">
@@ -544,7 +546,7 @@ function SearchTabContent({
     return (
       <div className="mx-auto flex w-full max-w-xl flex-col items-center justify-center gap-3 px-4 py-12 text-center">
         <FileQuestion className="h-10 w-10 text-muted-foreground" aria-hidden />
-        <div className="text-base font-semibold">No results for &ldquo;{trimmedQuery}&rdquo;</div>
+        <div className="text-base font-semibold">{t("search.empty.title")} “{trimmedQuery}”</div>
         <p className="text-sm text-muted-foreground">
           We couldn’t find a match in {describeScope(scope).toLowerCase()}. Try widening the scope or rephrasing your
           query.
@@ -552,15 +554,15 @@ function SearchTabContent({
         <div className="flex flex-wrap items-center justify-center gap-2">
           {scope !== "all" ? (
             <Button onClick={showAllScope} size="sm" variant="outline">
-              Search all scopes
+              {t("search.empty.searchAllScopes")}
             </Button>
           ) : null}
           <Button onClick={openNewIssue} size="sm" variant="default">
             <Plus className="mr-1.5 h-4 w-4" />
-            Create issue from this query
+            {t("search.empty.createIssue")}
           </Button>
           <Button onClick={navigateIssuesFallback} size="sm" variant="ghost">
-            Open Issues filter view
+            {t("search.empty.openIssuesFilter")}
           </Button>
         </div>
         <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground">
@@ -580,7 +582,7 @@ function SearchTabContent({
     <div className="flex w-full max-w-[960px] flex-col px-2 sm:px-4" data-testid="search-results">
       <div className="flex items-center justify-between py-2 text-[11px] uppercase tracking-wide text-muted-foreground">
         <span>
-          {totalResults === 1 ? "1 result" : `${totalResults} results`} · sorted by relevance
+          {totalResults === 1 ? t("search.results.summary.single") : `${totalResults} ${t("search.results.summary.multiple")}`} · sorted by relevance
         </span>
         {isFetching ? <span aria-live="polite" className="normal-case tracking-normal">Updating…</span> : null}
       </div>

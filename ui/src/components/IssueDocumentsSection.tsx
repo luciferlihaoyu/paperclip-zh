@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { t } from "@/i18n";
 import type {
   Agent,
   DocumentRevision,
@@ -291,7 +292,7 @@ export function IssueDocumentsSection({
       invalidateIssueDocuments();
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Failed to delete document");
+      setError(err instanceof Error ? err.message : t("components.issueDocumentsSection.failedToDelete"));
     },
   });
 
@@ -308,7 +309,7 @@ export function IssueDocumentsSection({
       invalidateIssueDocuments();
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Failed to restore document revision");
+      setError(err instanceof Error ? err.message : t("components.issueDocumentsSection.failedToRestore"));
     },
   });
 
@@ -324,7 +325,7 @@ export function IssueDocumentsSection({
       invalidateIssueDocuments();
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Failed to update document lock");
+      setError(err instanceof Error ? err.message : t("components.issueDocumentsSection.failedToUpdateLock"));
     },
   });
 
@@ -349,7 +350,7 @@ export function IssueDocumentsSection({
   const isEmpty = sortedDocuments.length === 0 && !issue.legacyPlanDocument;
   const newDocumentKeyError =
     draft?.isNew && draft.key.trim().length > 0 && !DOCUMENT_KEY_PATTERN.test(draft.key.trim())
-      ? "Use lowercase letters, numbers, -, or _, and start with a letter or number."
+      ? t("components.issueDocumentsSection.invalidKeyHint")
       : null;
 
   const resetAutosaveState = useCallback(() => {
@@ -432,9 +433,9 @@ export function IssueDocumentsSection({
 
     if (!normalizedKey || !normalizedBody) {
       if (currentDraft.isNew) {
-        setError("Document key and body are required");
+        setError(t("components.issueDocumentsSection.keyAndBodyRequired"));
       } else if (!normalizedBody) {
-        setError("Document body cannot be empty");
+        setError(t("components.issueDocumentsSection.bodyNotEmpty"));
       }
       if (options?.trackAutosave) {
         resetAutosaveState();
@@ -443,7 +444,7 @@ export function IssueDocumentsSection({
     }
 
     if (!DOCUMENT_KEY_PATTERN.test(normalizedKey)) {
-      setError("Document key must start with a letter or number and use only lowercase letters, numbers, -, or _.");
+      setError(t("components.issueDocumentsSection.keyMustStart"));
       if (options?.trackAutosave) {
         resetAutosaveState();
       }
@@ -503,7 +504,7 @@ export function IssueDocumentsSection({
       return true;
     } catch (err) {
       if (isLockedDocumentError(err)) {
-        setError("Document is locked. Unlock it before editing.");
+        setError(t("components.issueDocumentsSection.lockedForEdit"));
         resetAutosaveState();
         invalidateIssueDocuments();
         return false;
@@ -528,11 +529,11 @@ export function IssueDocumentsSection({
           resetAutosaveState();
           return false;
         } catch {
-          setError("Document changed remotely and the latest version could not be loaded");
+          setError(t("components.issueDocumentsSection.remoteChanged"));
           return false;
         }
       }
-      setError(err instanceof Error ? err.message : "Failed to save document");
+      setError(err instanceof Error ? err.message : t("components.issueDocumentsSection.failedToSave"));
       return false;
     }
   }, [documentConflict, invalidateIssueDocuments, issue.id, resetAutosaveState, runSave, sortedDocuments, syncDocumentCaches, upsertDocument]);
@@ -593,7 +594,7 @@ export function IssueDocumentsSection({
         setCopiedDocumentKey((current) => current === key ? null : current);
       }, 1400);
     } catch {
-      setError("Could not copy document");
+      setError(t("components.issueDocumentsSection.couldNotCopy"));
     }
   }, []);
 
@@ -618,7 +619,7 @@ export function IssueDocumentsSection({
       return;
     }
     if (documentConflict?.key === doc.key || documentHasUnsavedChanges(doc, draft)) {
-      setError("Save or cancel your local changes before viewing an older revision.");
+      setError(t("components.issueDocumentsSection.saveBeforeView"));
       return;
     }
     resetAutosaveState();
@@ -632,7 +633,7 @@ export function IssueDocumentsSection({
   const toggleDocumentLock = useCallback((doc: IssueDocument, locked: boolean) => {
     if (!canManageDocumentLocks || setDocumentLock.isPending) return;
     if (locked && (documentConflict?.key === doc.key || documentHasUnsavedChanges(doc, draft))) {
-      setError("Save or cancel local changes before changing the document lock.");
+      setError(t("components.issueDocumentsSection.saveBeforeLock"));
       return;
     }
     setDocumentLock.mutate({ key: doc.key, locked });
@@ -787,19 +788,19 @@ export function IssueDocumentsSection({
           {extraActions}
           <Button variant="outline" size="sm" onClick={beginNewDocument} className="shrink-0">
             <Plus className="mr-1.5 h-3.5 w-3.5" />
-            <span className="hidden sm:inline">New document</span>
-            <span className="sm:hidden">New</span>
+            <span className="hidden sm:inline">{t("components.issueDocumentsSection.newDocument")}</span>
+            <span className="sm:hidden">{t("components.issueDocumentsSection.new_short")}</span>
           </Button>
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-2 min-w-0">
-          <h3 className="w-full text-sm font-medium text-muted-foreground shrink-0 sm:w-auto">Documents</h3>
+          <h3 className="w-full text-sm font-medium text-muted-foreground shrink-0 sm:w-auto">{t("components.issueDocumentsSection.documents")}</h3>
           <div className="flex flex-wrap items-center gap-2 min-w-0 sm:ml-auto">
             {extraActions}
             <Button variant="outline" size="sm" onClick={beginNewDocument} className="shrink-0">
               <Plus className="mr-1.5 h-3.5 w-3.5" />
-              <span className="hidden sm:inline">New document</span>
-              <span className="sm:hidden">New</span>
+              <span className="hidden sm:inline">{t("components.issueDocumentsSection.newDocument")}</span>
+              <span className="sm:hidden">{t("components.issueDocumentsSection.new_short")}</span>
             </Button>
           </div>
         </div>
@@ -819,7 +820,7 @@ export function IssueDocumentsSection({
             onChange={(event) =>
               setDraft((current) => current ? { ...current, key: event.target.value.toLowerCase() } : current)
             }
-            placeholder="Document key"
+            placeholder={t("components.issueDocumentsSection.keyPlaceholder")}
           />
           {newDocumentKeyError && (
             <p className="text-xs text-destructive">{newDocumentKeyError}</p>
@@ -830,7 +831,7 @@ export function IssueDocumentsSection({
               onChange={(event) =>
                 setDraft((current) => current ? { ...current, title: event.target.value } : current)
               }
-              placeholder="Optional title"
+              placeholder={t("components.issueDocumentsSection.titlePlaceholder")}
             />
           )}
           <MarkdownEditor
@@ -838,7 +839,7 @@ export function IssueDocumentsSection({
             onChange={(body) =>
               setDraft((current) => current ? { ...current, body } : current)
             }
-            placeholder="Markdown body"
+            placeholder={t("components.issueDocumentsSection.bodyPlaceholder")}
             bordered={false}
             className="bg-transparent"
             contentClassName="min-h-[220px] text-[15px] leading-7"
@@ -856,7 +857,7 @@ export function IssueDocumentsSection({
               onClick={() => void commitDraft(draft, { clearAfterSave: false, trackAutosave: false })}
               disabled={upsertDocument.isPending}
             >
-              {upsertDocument.isPending ? "Saving..." : "Create document"}
+              {upsertDocument.isPending ? "Saving..." : t("components.issueDocumentsSection.create")}
             </Button>
           </div>
         </div>
@@ -1206,7 +1207,7 @@ export function IssueDocumentsSection({
                         markDocumentDirty(doc.key);
                         setDraft((current) => current ? { ...current, title: event.target.value } : current);
                       }}
-                      placeholder="Optional title"
+                      placeholder={t("components.issueDocumentsSection.titlePlaceholder")}
                     />
                   )}
                   <div
@@ -1245,7 +1246,7 @@ export function IssueDocumentsSection({
                               return current;
                             });
                           }}
-                          placeholder="Markdown body"
+                          placeholder={t("components.issueDocumentsSection.bodyPlaceholder")}
                           bordered={false}
                           className="bg-transparent"
                           contentClassName={documentBodyContentClassName}

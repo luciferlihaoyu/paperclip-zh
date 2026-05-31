@@ -25,6 +25,7 @@ import { timeAgo } from "../lib/timeAgo";
 import { cn, formatDateTime } from "../lib/utils";
 import { restoreSubmittedCommentDraft } from "../lib/comment-submit-draft";
 import { PluginSlotOutlet } from "@/plugins/slots";
+import { useTranslation } from "@/i18n";
 
 interface CommentWithRunMeta extends IssueComment {
   runId?: string | null;
@@ -168,7 +169,7 @@ function shouldImplicitlyReopenComment(issueStatus: string | undefined, assignee
 }
 
 function humanizeValue(value: string | null): string {
-  if (!value) return "None";
+  if (!value) return t("components.commentThread.none");
   return value.replace(/_/g, " ");
 }
 
@@ -181,9 +182,9 @@ function formatTimelineAssigneeLabel(
     return agentMap?.get(assignee.agentId)?.name ?? assignee.agentId.slice(0, 8);
   }
   if (assignee.userId) {
-    return formatAssigneeUserLabel(assignee.userId, currentUserId) ?? "Board";
+    return formatAssigneeUserLabel(assignee.userId, currentUserId) ?? t("components.commentThread.board");
   }
-  return "Unassigned";
+  return t("components.commentThread.unassigned");
 }
 
 function formatTimelineActorName(
@@ -196,9 +197,9 @@ function formatTimelineActorName(
     return agentMap?.get(actorId)?.name ?? actorId.slice(0, 8);
   }
   if (actorType === "system") {
-    return "System";
+    return t("components.commentThread.system");
   }
-  return formatAssigneeUserLabel(actorId, currentUserId) ?? "Board";
+  return formatAssigneeUserLabel(actorId, currentUserId) ?? t("components.commentThread.board");
 }
 
 function initialsForName(name: string) {

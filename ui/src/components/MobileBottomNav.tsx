@@ -34,7 +34,8 @@ interface MobileNavActionItem {
 
 type MobileNavItem = MobileNavLinkItem | MobileNavActionItem;
 
-export function MobileBottomNav({ visible }: MobileBottomNavProps) {
+export function MobileBottomNav({
+  const { t } = useTranslation(); visible }: MobileBottomNavProps) {
   const location = useLocation();
   const { selectedCompanyId } = useCompany();
   const { openNewIssue } = useDialogActions();

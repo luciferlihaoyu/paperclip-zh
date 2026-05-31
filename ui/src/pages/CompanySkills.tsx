@@ -19,6 +19,7 @@ import type {
 import { companySkillsApi } from "../api/companySkills";
 import { agentsApi } from "../api/agents";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useToastActions } from "../context/ToastContext";
 import { queryKeys } from "../lib/queryKeys";
@@ -538,19 +539,19 @@ function NewSkillForm({
         <Input
           value={name}
           onChange={(event) => setName(event.target.value)}
-          placeholder="Skill name"
+          placeholder={t("companySkills.skillName")}
           className="h-9 rounded-none border-0 border-b border-border px-0 shadow-none focus-visible:ring-0"
         />
         <Input
           value={slug}
           onChange={(event) => setSlug(event.target.value)}
-          placeholder="optional-shortname"
+          placeholder={t("companySkills.slug")}
           className="h-9 rounded-none border-0 border-b border-border px-0 shadow-none focus-visible:ring-0"
         />
         <Textarea
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="Short description"
+          placeholder={t("companySkills.shortDescription")}
           className="min-h-20 rounded-none border-0 border-b border-border px-0 shadow-none focus-visible:ring-0"
         />
         <div className="flex items-center justify-end gap-2">
@@ -562,7 +563,7 @@ function NewSkillForm({
             onClick={() => onCreate({ name, slug: slug || null, description: description || null })}
             disabled={isPending || name.trim().length === 0}
           >
-            {isPending ? "Creating..." : "Create skill"}
+            {isPending ? {t("companySkills.creating")} : {t("companySkills.createSkill")}}
           </Button>
         </div>
       </div>
@@ -739,7 +740,7 @@ function CatalogDetailPane({
   loadingPrimaryAction: boolean;
 }) {
   if (!skill) {
-    return <EmptyState icon={Boxes} message="Select a catalog skill to inspect." />;
+    return <EmptyState icon={Boxes} message={t("companySkills.selectCatalogSkill")} />;
   }
 
   const installedHash = installedSkill?.originHash ?? null;
@@ -765,7 +766,7 @@ function CatalogDetailPane({
     cta = (
       <Button onClick={onInstall} disabled={loadingPrimaryAction}>
         {skill.trustLevel === "scripts_executables" ? <AlertTriangle className="mr-1.5 h-3.5 w-3.5" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
-        {loadingPrimaryAction ? "Preparing..." : (skill.kind === "bundled" ? "Install bundled skill" : "Install optional skill")}
+        {loadingPrimaryAction ? {t("companySkills.preparing")} : (skill.kind === "bundled" ? {t("companySkills.installBundled")} : {t("companySkills.installOptional")})}
       </Button>
     );
   } else if (hashOutOfSync) {
@@ -846,9 +847,9 @@ function CatalogDetailPane({
           <span className="font-mono">{skill.contentHash.slice(0, 24)}…</span>
           <CopyText
             text={skill.contentHash}
-            copiedLabel="Copied hash"
-            ariaLabel="Copy content hash"
-            title="Copy content hash"
+            copiedLabel={t("companySkills.copiedHash")}
+            ariaLabel={t("companySkills.copyHash")}
+            title={t("companySkills.copyHash")}
             className="inline-flex h-6 w-6 items-center justify-center rounded-sm border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <Copy className="h-3 w-3" />
@@ -919,15 +920,15 @@ function InstallPreviewDialog({
 
   if (!skill) return null;
 
-  let confirmLabel = "Install skill";
+  let confirmLabel = {t("companySkills.installSkill")};
   let confirmVariant: "default" | "destructive" = "default";
   if (defaultAction === "update") {
-    confirmLabel = "Install update";
+    confirmLabel = {t("companySkills.installUpdate")};
   } else if (defaultAction === "replace") {
     confirmLabel = "Replace existing skill";
     confirmVariant = "destructive";
   }
-  if (isPending) confirmLabel = "Installing…";
+  if (isPending) confirmLabel = {t("companySkills.installing")};
 
   return (
     <Dialog open={open} onOpenChange={(value) => (!isPending ? onOpenChange(value) : null)}>
@@ -1080,7 +1081,7 @@ function AttachAgentsPopover({
         <button
           type="button"
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          aria-label="Attach to agents"
+          aria-label={t("companySkills.attachToAgents")}
         >
           <Pencil className="h-3 w-3" />
           Edit
@@ -1091,7 +1092,7 @@ function AttachAgentsPopover({
           <Input
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
-            placeholder="Filter agents"
+            placeholder={t("companySkills.filterAgents")}
             className="h-8"
           />
         </div>
@@ -1145,7 +1146,7 @@ function AttachAgentsPopover({
             Cancel
           </Button>
           <Button size="sm" onClick={() => onSubmit(Array.from(draft))} disabled={pending}>
-            {pending ? "Saving…" : "Save"}
+            {pending ? "Saving…" : {t("companySkills.saveFile")}}
           </Button>
         </div>
       </PopoverContent>
@@ -1428,7 +1429,7 @@ function SkillPane({
     return (
       <EmptyState
         icon={Boxes}
-        message="Select a skill to inspect its files."
+        message={t("companySkills.selectSkill")}
       />
     );
   }
@@ -1467,7 +1468,7 @@ function SkillPane({
               title={removeDisabledReason ?? undefined}
             >
               <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-              {deletePending ? "Removing..." : "Remove"}
+              {deletePending ? {t("companySkills.removing")} : "Remove"}
             </Button>
             {detail.editable ? (
               <button
@@ -1475,7 +1476,7 @@ function SkillPane({
                 onClick={() => setEditMode(!editMode)}
               >
                 <Pencil className="h-3.5 w-3.5" />
-                {editMode ? "Stop editing" : "Edit"}
+                {editMode ? {t("companySkills.stopEditing")} : {t("companySkills.edit")}}
               </button>
             ) : (
               <div className="text-sm text-muted-foreground">{detail.editableReason}</div>
@@ -1499,9 +1500,9 @@ function SkillPane({
                     </span>
                     <CopyText
                       text={detail.sourcePath}
-                      copiedLabel="Copied path"
-                      ariaLabel="Copy source path"
-                      title="Copy source path"
+                      copiedLabel={t("companySkills.copiedPath")}
+                      ariaLabel={t("companySkills.copySourcePath")}
+                      title={t("companySkills.copySourcePath")}
                       className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                       <Copy className="h-3.5 w-3.5" />
@@ -1552,7 +1553,7 @@ function SkillPane({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Mode</span>
-              <span>{detail.editable ? "Editable" : "Read only"}</span>
+              <span>{detail.editable ? {t("companySkills.editable")} : {t("companySkills.readOnly")}}</span>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -1642,7 +1643,7 @@ function SkillPane({
                 </Button>
                 <Button size="sm" onClick={onSave} disabled={savePending}>
                   <Save className="mr-1.5 h-3.5 w-3.5" />
-                  {savePending ? "Saving..." : "Save"}
+                  {savePending ? {t("companySkills.saving")} : {t("companySkills.saveFile")}}
                 </Button>
               </>
             )}
@@ -1683,6 +1684,7 @@ function SkillPane({
 }
 
 export function CompanySkills() {
+  const { t } = useTranslation();
   const { "*": routePath } = useParams<{ "*": string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -2230,7 +2232,7 @@ export function CompanySkills() {
   });
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={Boxes} message="Select a company to manage skills." />;
+    return <EmptyState icon={Boxes} message={t("companySkills.selectCompany")} />;
   }
 
   function handleAddSkillSource() {
@@ -2284,7 +2286,7 @@ export function CompanySkills() {
                   onClick={() => deleteSkill.mutate()}
                   disabled={deleteSkill.isPending || !deleteTargetSkillId}
                 >
-                  {deleteSkill.isPending ? "Removing..." : "Remove skill"}
+                  {deleteSkill.isPending ? {t("companySkills.removing")} : {t("companySkills.removeSkill")}}
                 </Button>
               </>
             )}
@@ -2377,7 +2379,7 @@ export function CompanySkills() {
                 size="icon-sm"
                 onClick={() => scanProjects.mutate()}
                 disabled={scanProjects.isPending}
-                title="Scan project workspaces for skills"
+                title={t("companySkills.scanWorkspaces")}
               >
                 <RefreshCw className={cn("h-4 w-4", scanProjects.isPending && "animate-spin")} />
               </Button>
@@ -2427,7 +2429,7 @@ export function CompanySkills() {
                   <input
                     value={skillFilter}
                     onChange={(event) => setSkillFilter(event.target.value)}
-                    placeholder="Filter skills"
+                    placeholder={t("companySkills.filterSkills")}
                     className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   />
                   <SourceFilterMenu counts={sourceCounts} value={sourceFilter} onChange={setSourceFilter} />
@@ -2437,7 +2439,7 @@ export function CompanySkills() {
                   <input
                     value={source}
                     onChange={(event) => setSource(event.target.value)}
-                    placeholder="Paste path, GitHub URL, or skills.sh command"
+                    placeholder={t("companySkills.sourceLabel")}
                     className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   />
                   <Button
@@ -2470,7 +2472,7 @@ export function CompanySkills() {
                 <div className="px-4 py-8">
                   <EmptyState
                     icon={Boxes}
-                    message="No skills installed yet."
+                    message={t("companySkills.noSkillsInstalled")}
                   />
                   <div className="mt-3 flex flex-col items-center gap-2">
                     <Button size="sm" onClick={() => setViewParam("catalog")}>
@@ -2549,7 +2551,7 @@ export function CompanySkills() {
                   <input
                     value={catalogFilter}
                     onChange={(event) => setCatalogFilter(event.target.value)}
-                    placeholder="Search catalog"
+                    placeholder={t("companySkills.searchCatalog")}
                     className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   />
                   <CatalogFilterMenu

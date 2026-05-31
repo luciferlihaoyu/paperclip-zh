@@ -3,6 +3,7 @@ import type {
   WorkspaceRuntimeControlTarget,
   WorkspaceRuntimeService,
 } from "@paperclipai/shared";
+import { useTranslation } from "@/i18n";
 import {
   listWorkspaceCommandDefinitions,
   matchWorkspaceRuntimeServiceToCommand,
@@ -123,7 +124,7 @@ function buildJobItem(
     workspaceCommandId: command.id,
     runtimeServiceId: null,
     serviceIndex: null,
-    disabledReason: command.disabledReason ?? (!command.command ? "This job is missing a command." : null),
+    disabledReason: command.disabledReason ?? (!command.command ? t("components.WorkspaceRuntimeControls.commandMissing") : null),
   };
 }
 
@@ -170,7 +171,7 @@ export function buildWorkspaceRuntimeControlSections(input: {
       workspaceCommandId: null,
       runtimeServiceId: runtimeService.id,
       serviceIndex: runtimeService.configIndex ?? null,
-      disabledReason: "This runtime service no longer matches a configured workspace command.",
+      disabledReason: t("components.WorkspaceRuntimeControls.noLongerMatches"),
     }));
 
   return {
@@ -246,12 +247,12 @@ function CommandActionButtons({
         const request = buildRequest(item, action);
         const Icon = action === "stop" ? Square : action === "restart" ? RotateCcw : Play;
         const label = action === "run"
-          ? "Run"
+          ? t("components.WorkspaceRuntimeControls.run")
           : action === "start"
-            ? "Start"
+            ? t("components.WorkspaceRuntimeControls.start")
             : action === "stop"
-              ? "Stop"
-              : "Restart";
+              ? t("components.WorkspaceRuntimeControls.stop")
+              : t("components.WorkspaceRuntimeControls.restart");
         const showSpinner = isPending && requestMatchesPending(pendingRequest, request);
         const disabled =
           isPending
@@ -368,12 +369,13 @@ function CommandSection({
 }
 
 export function WorkspaceRuntimeControls({
+  const { t } = useTranslation();
   sections,
   items,
   isPending = false,
   pendingRequest = null,
-  serviceEmptyMessage = "No services are configured for this workspace.",
-  jobEmptyMessage = "No one-shot jobs are configured for this workspace.",
+  serviceEmptyMessage = t("components.WorkspaceRuntimeControls.noServices"),
+  jobEmptyMessage = t("components.WorkspaceRuntimeControls.noJobs"),
   emptyMessage,
   disabledHint = null,
   onAction,

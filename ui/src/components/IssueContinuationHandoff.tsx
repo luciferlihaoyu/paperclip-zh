@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { t } from "@/i18n";
 import type { IssueDocument } from "@paperclipai/shared";
 import { ISSUE_CONTINUATION_SUMMARY_DOCUMENT_KEY } from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export function IssueContinuationHandoff({
 
   if (!document) return null;
 
-  const title = document.title?.trim() || "Continuation handoff";
+  const title = document.title?.trim() || t("components.issueContinuationHandoff.title");
 
   return (
     <div
@@ -66,7 +67,7 @@ export function IssueContinuationHandoff({
           type="button"
           className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
           onClick={() => setExpanded((current) => !current)}
-          aria-label={expanded ? "Collapse continuation handoff" : "Expand continuation handoff"}
+          aria-label={expanded ? t("components.issueContinuationHandoff.collapse") : t("components.issueContinuationHandoff.expand")}
           aria-expanded={expanded}
         >
           {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -86,7 +87,7 @@ export function IssueContinuationHandoff({
         </div>
         <Button variant="ghost" size="sm" onClick={copyBody} className="shrink-0">
           {copied ? <Check className="mr-1.5 h-3.5 w-3.5" /> : <Copy className="mr-1.5 h-3.5 w-3.5" />}
-          {copied ? "Copied" : "Copy"}
+          {copied ? t("components.issueContinuationHandoff.copied") : t("components.issueContinuationHandoff.copy")}
         </Button>
       </div>
       {expanded ? (

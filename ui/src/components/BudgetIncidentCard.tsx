@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "@/i18n";
 import type { BudgetIncident } from "@paperclipai/shared";
 import { AlertOctagon, ArrowUpRight, PauseCircle } from "lucide-react";
 import { formatCents } from "../lib/utils";
@@ -18,11 +19,11 @@ function parseDollarInput(value: string) {
 }
 
 function incidentStateLabel(incident: BudgetIncident) {
-  if (incident.status === "resolved") return "Resolved";
-  if (incident.status === "dismissed") return "Dismissed";
-  if (incident.approvalStatus === "revision_requested") return "Escalated";
-  if (incident.approvalStatus === "pending") return "Pending approval";
-  return "Open";
+  if (incident.status === "resolved") return t("components.budgetIncidentCard.resolved");
+  if (incident.status === "dismissed") return t("components.budgetIncidentCard.dismissed");
+  if (incident.approvalStatus === "revision_requested") return t("components.budgetIncidentCard.escalated");
+  if (incident.approvalStatus === "pending") return t("components.budgetIncidentCard.pendingApproval");
+  return t("components.budgetIncidentCard.open");
 }
 
 export function BudgetIncidentCard({
@@ -70,8 +71,8 @@ export function BudgetIncidentCard({
           <PauseCircle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             {incident.scopeType === "project"
-              ? "Project execution is paused. New work in this project will not start until you resolve the budget incident."
-              : "This scope is paused. New heartbeats will not start until you resolve the budget incident."}
+              ? t("components.budgetIncidentCard.pausedProject")
+              : t("components.budgetIncidentCard.pausedScope")}
           </div>
         </div>
 
@@ -84,7 +85,7 @@ export function BudgetIncidentCard({
               value={draftAmount}
               onChange={(event) => setDraftAmount(event.target.value)}
               inputMode="decimal"
-              placeholder="0.00"
+              placeholder={t("components.budgetIncidentCard.placeholder")}
             />
             <Button
               className="gap-2"
@@ -94,7 +95,7 @@ export function BudgetIncidentCard({
               }}
             >
               <ArrowUpRight className="h-4 w-4" />
-              {isMutating ? "Applying..." : "Raise budget & resume"}
+              {isMutating ? t("components.budgetIncidentCard.applying") : t("components.budgetIncidentCard.raiseBudget")}
             </Button>
           </div>
           {parsed !== null && parsed <= incident.amountObserved ? (

@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -102,6 +103,7 @@ function MenuAction({ label, description, icon: Icon, onClick, href, external = 
 }
 
 export function SidebarAccountMenu({
+  const { t } = useTranslation();
   deploymentMode,
   instanceSettingsTarget,
   open: controlledOpen,
@@ -128,10 +130,10 @@ export function SidebarAccountMenu({
     },
   });
 
-  const displayName = session?.user.name?.trim() || "Board";
+  const displayName = session?.user.name?.trim() || t("components.SidebarAccountMenu.board");
   const secondaryLabel =
-    session?.user.email?.trim() || (deploymentMode === "authenticated" ? "Signed in" : "Local workspace board");
-  const accountBadge = deploymentMode === "authenticated" ? "Account" : "Local";
+    session?.user.email?.trim() || (deploymentMode === "authenticated" ? t("components.SidebarAccountMenu.signedIn") : t("components.SidebarAccountMenu.localWorkspace"));
+  const accountBadge = deploymentMode === "authenticated" ? t("components.SidebarAccountMenu.account") : t("components.SidebarAccountMenu.local");
   const initials = deriveInitials(displayName);
   const profileHref = `/u/${deriveUserSlug(session?.user.name, session?.user.email, session?.user.id)}`;
 
@@ -147,7 +149,7 @@ export function SidebarAccountMenu({
           <button
             type="button"
             className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] font-medium text-foreground/80 transition-colors hover:bg-accent/50 hover:text-foreground"
-            aria-label="Open account menu"
+            aria-label={t("components.SidebarAccountMenu.openAccountMenu")}
           >
             <Avatar size="sm">
               {session?.user.image ? <AvatarImage src={session.user.image} alt={displayName} /> : null}
@@ -187,15 +189,15 @@ export function SidebarAccountMenu({
 
             <div className="mt-4 space-y-1">
               <MenuAction
-                label="View profile"
-                description="Open your activity, task, and usage ledger."
+                label={t("components.SidebarAccountMenu.viewProfile")}
+                description={t("components.SidebarAccountMenu.viewProfileDesc")}
                 icon={UserRound}
                 href={profileHref}
                 onClick={closeNavigationChrome}
               />
               <MenuAction
-                label="Edit profile"
-                description="Update your display name and avatar."
+                label={t("components.SidebarAccountMenu.editProfile")}
+                description={t("components.SidebarAccountMenu.editProfileDesc")}
                 icon={UserRoundPen}
                 href={PROFILE_SETTINGS_PATH}
                 onClick={closeNavigationChrome}

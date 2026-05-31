@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import { useCompany } from "../context/CompanyContext";
 import { useDialogActions } from "../context/DialogContext";
 import { useSidebar } from "../context/SidebarContext";
@@ -121,7 +122,7 @@ export function CommandPalette() {
         if (v && isMobile) setSidebarOpen(false);
       }}>
       <CommandInput
-        placeholder="Search issues, agents, projects..."
+        placeholder={t("components.commandPalette.searchPlaceholder")}
         value={query}
         onValueChange={setQuery}
         onKeyDown={(event) => {
@@ -140,12 +141,12 @@ export function CommandPalette() {
               to <span className="font-medium">search all</span> or keep typing to refine.
             </span>
           ) : (
-            "No results found."
+            t("components.commandPalette.noResults")
           )}
         </CommandEmpty>
 
         {showSearchAll ? (
-          <CommandGroup heading="Search">
+          <CommandGroup heading={t("components.commandPalette.searchHeading")}>
             <CommandItem
               value={`${SEARCH_ALL_VALUE} ${searchQuery}`}
               onSelect={goFullSearch}
@@ -166,7 +167,7 @@ export function CommandPalette() {
 
         {showSearchAll ? <CommandSeparator /> : null}
 
-        <CommandGroup heading="Actions">
+        <CommandGroup heading={t("components.commandPalette.actionsHeading")}>
           <CommandItem
             onSelect={() => {
               setOpen(false);
@@ -194,7 +195,7 @@ export function CommandPalette() {
 
         <CommandSeparator />
 
-        <CommandGroup heading="Pages">
+        <CommandGroup heading={t("components.commandPalette.pagesHeading")}>
           <CommandItem onSelect={() => go("/dashboard")}>
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Dashboard
@@ -232,7 +233,7 @@ export function CommandPalette() {
         {visibleIssues.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="Issues">
+            <CommandGroup heading={t("components.commandPalette.issuesHeading")}>
               {visibleIssues.slice(0, 10).map((issue) => (
                 <CommandItem
                   key={issue.id}
@@ -261,7 +262,7 @@ export function CommandPalette() {
         {agents.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="Agents">
+            <CommandGroup heading={t("components.commandPalette.agentsHeading")}>
               {agents.slice(0, 10).map((agent) => (
                 <CommandItem key={agent.id} onSelect={() => go(agentUrl(agent))}>
                   <Bot className="mr-2 h-4 w-4" />
@@ -276,7 +277,7 @@ export function CommandPalette() {
         {projects.length > 0 && (
           <>
             <CommandSeparator />
-            <CommandGroup heading="Projects">
+            <CommandGroup heading={t("components.commandPalette.projectsHeading")}>
               {projects.slice(0, 10).map((project) => (
                 <CommandItem key={project.id} onSelect={() => go(projectUrl(project))}>
                   <Hexagon className="mr-2 h-4 w-4" />

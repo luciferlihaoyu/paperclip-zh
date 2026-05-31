@@ -1,4 +1,5 @@
 import {
+import { t } from "@/i18n";
   AssistantRuntimeProvider,
   useAui,
 } from "@assistant-ui/react";
@@ -432,10 +433,10 @@ function IssueAssigneePausedNotice({ agent }: { agent: Agent | null }) {
 
   const pauseDetail =
     agent.pauseReason === "budget"
-      ? "It was paused by a budget hard stop."
+      ? t("components.issueChatThread.budgetPause")
       : agent.pauseReason === "system"
-        ? "It was paused by the system."
-        : "It was paused manually.";
+        ? t("components.issueChatThread.systemPause")
+        : t("components.issueChatThread.manualPause");
 
   return (
     <div className="mb-3 rounded-md border border-orange-300/70 bg-orange-50/90 px-3 py-2.5 text-sm text-orange-950 shadow-sm dark:border-orange-500/40 dark:bg-orange-500/10 dark:text-orange-100">

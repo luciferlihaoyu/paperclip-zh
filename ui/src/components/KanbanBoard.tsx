@@ -17,6 +17,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useTranslation } from "@/i18n";
 import { StatusIcon } from "./StatusIcon";
 import { PriorityIcon } from "./PriorityIcon";
 import { Identity } from "./Identity";
@@ -72,6 +73,7 @@ interface KanbanBoardProps {
 /* ── Droppable Column ── */
 
 function KanbanColumn({
+  const { t } = useTranslation();
   status,
   issues,
   agents,
@@ -161,12 +163,12 @@ function KanbanColumn({
             className="mt-1 flex w-full items-center justify-center rounded-md border border-dashed border-border bg-background/70 px-2 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
             onClick={onShowMore}
           >
-            Show {nextRevealCount} more
+            {t("components.KanbanBoard.showMore", { n: nextRevealCount })}
           </button>
         ) : null}
         {issues.length > 0 && (hiddenCount > 0 || issues.length >= visibleCount) ? (
           <p className="px-1 pt-1 text-[11px] text-muted-foreground">
-            Showing {visibleIssues.length} of {issues.length}
+            {t("components.KanbanBoard.showing", { visible: visibleIssues.length, total: issues.length })}
           </p>
         ) : null}
       </div>
@@ -236,11 +238,11 @@ function KanbanCard({
           {isSuccessfulRunHandoffRequired(issue) ? (
             <span
               className="inline-flex items-center gap-1 rounded-full border border-amber-400/45 bg-amber-50/60 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:border-amber-300/35 dark:bg-amber-400/10 dark:text-amber-300"
-              title="This issue needs a next step"
-              aria-label="Needs next step"
+              title=t("components.KanbanBoard.thisIssueNeedsNextStep")
+              aria-label={t("components.KanbanBoard.needsNextStep")}
             >
               <AlertTriangle className="h-3 w-3" />
-              Next step
+              {t("components.KanbanBoard.nextStep")}
             </span>
           ) : null}
           {isLive && (
@@ -249,7 +251,7 @@ function KanbanCard({
                 <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
               </span>
-              {compact ? "Live" : null}
+              {compact ? t("components.KanbanBoard.live") : null}
             </span>
           )}
         </div>

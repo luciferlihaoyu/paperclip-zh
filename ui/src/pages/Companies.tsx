@@ -8,6 +8,7 @@ import { queryKeys } from "../lib/queryKeys";
 import { formatCents, relativeTime } from "../lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/i18n";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +30,7 @@ import {
 } from "lucide-react";
 
 export function Companies() {
+  const { t } = useTranslation();
   const {
     companies,
     selectedCompanyId,
@@ -69,7 +71,7 @@ export function Companies() {
   });
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Companies" }]);
+    setBreadcrumbs([{ label: t("companies.selectCompany") }]);
   }, [setBreadcrumbs]);
 
   function startEdit(companyId: string, currentName: string) {
@@ -235,13 +237,13 @@ export function Companies() {
                 <div className="flex items-center gap-1.5">
                   <Users className="h-3.5 w-3.5" />
                   <span>
-                    {agentCount} {agentCount === 1 ? "agent" : "agents"}
+                    {agentCount} {agentCount === 1 ? t("companies.agent_singular") : t("companies.agent_plural")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CircleDot className="h-3.5 w-3.5" />
                   <span>
-                    {issueCount} {issueCount === 1 ? "issue" : "issues"}
+                    {issueCount} {issueCount === 1 ? t("companies.issue_singular") : t("companies.issue_plural")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 tabular-nums">
@@ -283,7 +285,7 @@ export function Companies() {
                       onClick={() => deleteMutation.mutate(company.id)}
                       disabled={deleteMutation.isPending}
                     >
-                      {deleteMutation.isPending ? "Deleting…" : "Delete"}
+                      {deleteMutation.isPending ? t("companies.deleting") : "Delete"}
                     </Button>
                   </div>
                 </div>

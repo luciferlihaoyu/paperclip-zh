@@ -435,8 +435,8 @@ function CodeBlock({
     }, 1500);
   }, [children]);
 
-  const copyLabel = failed ? "Copy failed" : copied ? "Copied!" : "Copy";
-  const wrapLabel = wrapLines ? "Unwrap lines" : "Wrap lines";
+  const copyLabel = failed ? t("components.MarkdownBody.copyFailed") : copied ? t("components.MarkdownBody.copied") : t("components.MarkdownBody.copy");
+  const wrapLabel = wrapLines ? t("components.MarkdownBody.unwrapLines") : t("components.MarkdownBody.wrapLines");
 
   return (
     <div className="paperclip-markdown-codeblock" data-wrap-lines={wrapLines || undefined}>
@@ -483,7 +483,7 @@ function CodeBlock({
         <button
           type="button"
           onClick={handleCopy}
-          aria-label="Copy code"
+          aria-label={t("components.MarkdownBody.copyCode")}
           title={copyLabel}
           className="paperclip-markdown-codeblock-action paperclip-markdown-codeblock-copy"
           style={codeBlockActionStyle}
@@ -530,7 +530,7 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
         const message =
           err instanceof Error && err.message
             ? err.message
-            : "Failed to render Mermaid diagram.";
+            : t("components.MarkdownBody.mermaidFailed");
         setError(message);
       });
 
@@ -546,7 +546,7 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
       ) : (
         <>
           <p className={cn("paperclip-mermaid-status", error && "paperclip-mermaid-status-error")}>
-            {error ? `Unable to render Mermaid diagram: ${error}` : "Rendering Mermaid diagram..."}
+            {error ? t("components.MarkdownBody.mermaidError", { error }) : t("components.MarkdownBody.renderingMermaid")}
           </p>
           <pre className="paperclip-mermaid-source">
             <code className="language-mermaid">{source}</code>
@@ -558,6 +558,7 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
 }
 
 export function MarkdownBody({
+  const { t } = useTranslation();
   children,
   className,
   style,

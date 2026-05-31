@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Agent, Issue } from "@paperclipai/shared";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import { accessApi } from "../api/access";
 import { formatAssigneeUserLabel } from "../lib/assignees";
 import { buildCompanyUserInlineOptions, buildCompanyUserLabelMap } from "../lib/company-members";
@@ -68,7 +69,7 @@ export function ExecutionParticipantPicker({
 
   const participantLabel = (value: string) => {
     if (value.startsWith("agent:")) return agentName(value.slice("agent:".length));
-    if (value.startsWith("user:")) return userLabel(value.slice("user:".length)) ?? "User";
+    if (value.startsWith("user:")) return userLabel(value.slice("user:".length)) ?? t("components.executionParticipantPicker.user");
     return value;
   };
 
@@ -89,7 +90,7 @@ export function ExecutionParticipantPicker({
     updatePolicy(next);
   };
 
-  const label = stageType === "review" ? "Reviewers" : "Approvers";
+  const label = stageType === "review" ? t("components.executionParticipantPicker.reviewers") : t("components.executionParticipantPicker.approvers");
   const Icon = stageType === "review" ? Eye : ShieldCheck;
 
   return (
@@ -152,7 +153,7 @@ export function ExecutionParticipantPicker({
               onClick={() => toggle(`user:${issue.createdByUserId}`)}
             >
               <User className="h-3 w-3 shrink-0 text-muted-foreground" />
-              {creatorUserLabel ?? "Requester"}
+              {creatorUserLabel ?? t("components.executionParticipantPicker.requester")}
             </button>
           )}
           {otherUserOptions

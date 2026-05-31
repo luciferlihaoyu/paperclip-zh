@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useTranslation } from "@/i18n";
 
 function statusDotColor(status?: string): string {
   switch (status) {
@@ -49,14 +50,14 @@ export function CompanySwitcher({ open: controlledOpen, onOpenChange }: CompanyS
               <span className={`h-2 w-2 rounded-full shrink-0 ${statusDotColor(selectedCompany.status)}`} />
             )}
             <span className="text-sm font-medium truncate">
-              {selectedCompany?.name ?? "Select company"}
+              {selectedCompany?.name ?? t("components.companySwitcher.selectCompany")}
             </span>
           </div>
           <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[220px]">
-        <DropdownMenuLabel>Companies</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("components.companySwitcher.companies")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {sidebarCompanies.map((company) => (
           <DropdownMenuItem
@@ -69,7 +70,7 @@ export function CompanySwitcher({ open: controlledOpen, onOpenChange }: CompanyS
           </DropdownMenuItem>
         ))}
         {sidebarCompanies.length === 0 && (
-          <DropdownMenuItem disabled>No companies</DropdownMenuItem>
+          <DropdownMenuItem disabled>{t("components.companySwitcher.noCompanies")}</DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

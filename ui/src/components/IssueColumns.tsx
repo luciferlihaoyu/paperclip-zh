@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { t } from "@/i18n";
 import type { Issue } from "@paperclipai/shared";
 import { Columns3 } from "lucide-react";
 import { pickTextColorForPillBg } from "@/lib/color-contrast";
@@ -23,25 +24,25 @@ import { StatusIcon } from "./StatusIcon";
 export const issueTrailingColumns: InboxIssueColumn[] = ["assignee", "project", "workspace", "parent", "labels", "updated"];
 
 const issueColumnLabels: Record<InboxIssueColumn, string> = {
-  status: "Status",
-  id: "ID",
-  assignee: "Assignee",
-  project: "Project",
-  workspace: "Workspace",
-  parent: "Parent issue",
-  labels: "Tags",
-  updated: "Last updated",
+  status: t("components.issueColumns.status"),
+  id: t("components.issueColumns.id"),
+  assignee: t("components.issueColumns.assignee"),
+  project: t("components.issueColumns.project"),
+  workspace: t("components.issueColumns.workspace"),
+  parent: t("components.issueColumns.parentIssue"),
+  labels: t("components.issueColumns.tags"),
+  updated: t("components.issueColumns.lastUpdated"),
 };
 
 const issueColumnDescriptions: Record<InboxIssueColumn, string> = {
-  status: "Issue state chip on the left edge.",
-  id: "Ticket identifier like PAP-1009.",
-  assignee: "Assigned agent or board user.",
-  project: "Linked project pill with its color.",
-  workspace: "Execution or project workspace used for the issue.",
-  parent: "Parent issue identifier and title.",
-  labels: "Issue labels and tags.",
-  updated: "Latest visible activity time.",
+  status: t("components.issueColumns.statusDesc"),
+  id: t("components.issueColumns.idDesc"),
+  assignee: t("components.issueColumns.assigneeDesc"),
+  project: t("components.issueColumns.projectDesc"),
+  workspace: t("components.issueColumns.workspaceDesc"),
+  parent: t("components.issueColumns.parentDesc"),
+  labels: t("components.issueColumns.tagsDesc"),
+  updated: t("components.issueColumns.updatedDesc"),
 };
 
 export function issueActivityText(issue: Issue): string {
@@ -266,9 +267,7 @@ export function InboxIssueTrailingColumns({
           }
 
           return (
-            <span key={column} className="min-w-0 truncate text-xs text-muted-foreground">
-              Unassigned
-            </span>
+            <span key={column} className="min-w-0 truncate text-xs text-muted-foreground">{t("components.issueColumns.unassigned")}</span>
           );
         }
 
@@ -369,7 +368,7 @@ export function InboxIssueTrailingColumns({
               {parentIdentifier ? (
                 <span className="font-mono">{parentIdentifier}</span>
               ) : (
-                <span className="italic">Sub-issue</span>
+                <span className="italic">{t("components.issueColumns.subIssue")}</span>
               )}
             </span>
           );

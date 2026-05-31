@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useId, useState, type ReactNode } from "react";
 import {
   ChevronDown,
@@ -207,6 +208,7 @@ function MetadataRow({ row, tone }: { row: SystemNoticeMetadataRow; tone: ToneTo
 }
 
 export function SystemNotice({
+  const { t } = useTranslation();
   tone = "neutral",
   label,
   body,
@@ -224,11 +226,11 @@ export function SystemNotice({
   const resolvedLabel =
     label ??
     {
-      neutral: "System notice",
-      info: "System notice",
-      success: "System notice",
-      warning: "System warning",
-      danger: "System alert",
+      neutral: t("components.SystemNotice.neutral"),
+      info: t("components.SystemNotice.info"),
+      success: t("components.SystemNotice.success"),
+      warning: t("components.SystemNotice.warning"),
+      danger: t("components.SystemNotice.danger"),
     }[tone];
 
   return (
@@ -294,7 +296,7 @@ export function SystemNotice({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
             )}
           >
-            <span>{open ? "Hide details" : "Details"}</span>
+            <span>{open ? t("components.SystemNotice.hideDetails") : t("components.SystemNotice.details")}</span>
             <ChevronDown
               className={cn(
                 "h-3.5 w-3.5 transition-transform duration-150",

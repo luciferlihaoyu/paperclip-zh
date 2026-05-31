@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronRight, HelpCircle } from "lucide-react";
 import { syncRoutineVariablesWithTemplate, type RoutineVariable } from "@paperclipai/shared";
@@ -43,6 +44,7 @@ function updateVariableList(
 }
 
 export function RoutineVariablesEditor({
+  const { t } = useTranslation();
   title,
   description,
   value,
@@ -201,7 +203,7 @@ export function RoutineVariablesEditor({
                         })))}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="No default" />
+                          <SelectValue placeholder={t("components.RoutineVariablesEditor.noDefault")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="__unset__">No default</SelectItem>
@@ -242,12 +244,12 @@ const BUILTIN_VARIABLE_DOCS: BuiltinVariableDoc[] = [
   {
     name: "date",
     example: "2026-04-28",
-    description: "Current date in YYYY-MM-DD format (UTC) at the time the routine runs.",
+    description: t("components.RoutineVariablesEditor.dateDescription"),
   },
   {
     name: "timestamp",
-    example: "April 28, 2026 at 12:17 PM UTC",
-    description: "Human-readable date and time (UTC) at the time the routine runs.",
+    example: t("components.RoutineVariablesEditor.dateExample"),
+    description: t("components.RoutineVariablesEditor.dateTimeDescription"),
   },
 ];
 
@@ -264,7 +266,7 @@ export function RoutineVariablesHint() {
           type="button"
           onClick={() => setHelpOpen(true)}
           className="shrink-0 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Show variable help"
+          aria-label={t("components.RoutineVariablesEditor.showHelp")}
         >
           <HelpCircle className="h-3.5 w-3.5" />
         </button>

@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "@/lib/router";
 import { useQuery } from "@tanstack/react-query";
@@ -45,9 +46,9 @@ import type { Project } from "@paperclipai/shared";
 type ProjectSidebarSlot = ReturnType<typeof usePluginSlots>["slots"][number];
 
 const PROJECT_SORT_CHOICES: SidebarSectionRadioChoice[] = [
-  { value: "top", label: "Top" },
-  { value: "alphabetical", label: "Alphabetical" },
-  { value: "recent", label: "Recent" },
+  { value: "top", label: t("components.SidebarProjects.top") },
+  { value: "alphabetical", label: t("components.SidebarProjects.alphabetical") },
+  { value: "recent", label: t("components.SidebarProjects.recent") },
 ];
 const REORDER_POINTER_MEDIA = "(hover: hover) and (pointer: fine)";
 
@@ -144,7 +145,7 @@ function ProjectItem({
             style={{ backgroundColor: project.color ?? "#6366f1" }}
           />
           <span className="flex-1 truncate">{project.name}</span>
-          {project.pauseReason === "budget" ? <BudgetSidebarMarker title="Project paused by budget" /> : null}
+          {project.pauseReason === "budget" ? <BudgetSidebarMarker title=t("components.SidebarProjects.pausedByBudget") /> : null}
         </NavLink>
 
         <DropdownMenu>
@@ -172,7 +173,7 @@ function ProjectItem({
               disabled={leaving}
             >
               {leaving ? <Loader2 className="size-4 motion-safe:animate-spin" /> : <LogOut className="size-4" />}
-              <span>{leaving ? "Leaving..." : "Leave project"}</span>
+              <span>{leaving ? t("components.SidebarProjects.leaving") : t("components.SidebarProjects.leaveProject")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -383,15 +384,15 @@ export function SidebarProjects() {
 
   return (
     <SidebarSection
-      label="Projects"
+      label={t("components.SidebarProjects.projects")}
       collapsible={{ open, onOpenChange: setOpen }}
       headerAction={{
-        ariaLabel: "New project",
+        ariaLabel: t("components.SidebarProjects.newProject"),
         icon: Plus,
         onClick: openNewProject,
       }}
       menu={{
-        ariaLabel: "Projects section actions",
+        ariaLabel: t("components.SidebarProjects.sectionActions"),
         actions: [
           { type: "item", label: "Browse projects", icon: FolderOpen, href: "/projects" },
           { type: "separator" },

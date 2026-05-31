@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { t } from "@/i18n";
 import { useQuery } from "@tanstack/react-query";
 import type { Agent, DocumentAnnotationThreadWithComments, IssueDocument } from "@paperclipai/shared";
 import { MessageSquare } from "lucide-react";

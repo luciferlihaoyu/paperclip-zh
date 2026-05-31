@@ -15,8 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, ChevronRight, Sparkles } from "lucide-react";
 import type { ApprovalComment } from "@paperclipai/shared";
 import { MarkdownBody } from "../components/MarkdownBody";
+import { useTranslation } from "@/i18n";
 
 export function ApprovalDetail() {
+  const { t } = useTranslation();
   const { approvalId } = useParams<{ approvalId: string }>();
   const { selectedCompanyId, setSelectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
@@ -65,7 +67,7 @@ export function ApprovalDetail() {
 
   useEffect(() => {
     setBreadcrumbs([
-      { label: "Approvals", href: "/approvals" },
+      { label: t("approvals.pending"), href: "/approvals" },
       { label: approval?.id?.slice(0, 8) ?? approvalId ?? "Approval" },
     ]);
   }, [setBreadcrumbs, approval, approvalId]);
@@ -156,17 +158,17 @@ export function ApprovalDetail() {
       ? {
           label:
             (linkedIssues?.length ?? 0) > 1
-              ? "Review linked issues"
-              : "Review linked issue",
+              ? t("approvalDetail.reviewLinkedIssues")
+              : t("approvalDetail.reviewLinkedIssue"),
           to: `/issues/${primaryLinkedIssue.identifier ?? primaryLinkedIssue.id}`,
         }
       : linkedAgentId
         ? {
-            label: "Open hired agent",
+            label: t("approvalDetail.openHiredAgent"),
             to: `/agents/${linkedAgentId}`,
           }
         : {
-            label: "Back to approvals",
+            label: t("approvalDetail.backToApprovals"),
             to: "/approvals",
           };
 
@@ -183,7 +185,7 @@ export function ApprovalDetail() {
               <div>
                 <p className="text-sm text-green-800 dark:text-green-100 font-medium">Approval confirmed</p>
                 <p className="text-xs text-green-700 dark:text-green-200/90">
-                  Requesting agent was notified to review this approval and linked issues.
+                  t("approvalDetail.approvedBannerSubtext")
                 </p>
               </div>
             </div>
@@ -256,7 +258,7 @@ export function ApprovalDetail() {
               ))}
             </div>
             <p className="text-[11px] text-muted-foreground mt-2">
-              Linked issues remain open until the requesting agent follows up and closes them.
+              t("approvalDetail.linkedIssuesHint")
             </p>
           </div>
         )}
@@ -312,7 +314,7 @@ export function ApprovalDetail() {
               variant="outline"
               className="text-destructive border-destructive/40"
               onClick={() => {
-                if (!window.confirm("Delete this disapproved agent? This cannot be undone.")) return;
+                if (!window.confirm(t("approvalDetail.deleteDisapprovedAgentConfirm"))) return;
                 deleteAgentMutation.mutate(linkedAgentId);
               }}
               disabled={deleteAgentMutation.isPending}
@@ -337,7 +339,7 @@ export function ApprovalDetail() {
                     />
                   </Link>
                 ) : (
-                  <Identity name="Board" size="sm" />
+                  <Identity name={t("approvalDetail.board")} size="sm" />
                 )}
                 <span className="text-xs text-muted-foreground">
                   {new Date(comment.createdAt).toLocaleString()}
@@ -350,7 +352,7 @@ export function ApprovalDetail() {
         <Textarea
           value={commentBody}
           onChange={(e) => setCommentBody(e.target.value)}
-          placeholder="Add a comment..."
+          placeholder={t("approvalDetail.addComment")}
           rows={3}
         />
         <div className="flex justify-end">
@@ -359,7 +361,7 @@ export function ApprovalDetail() {
             onClick={() => addCommentMutation.mutate()}
             disabled={!commentBody.trim() || addCommentMutation.isPending}
           >
-            {addCommentMutation.isPending ? "Posting…" : "Post comment"}
+            {addCommentMutation.isPending ? t("approvalDetail.posting") : t("approvalDetail.postComment")}
           </Button>
         </div>
       </div>

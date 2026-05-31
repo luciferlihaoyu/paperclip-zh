@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, NavLink, useLocation } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -45,9 +46,9 @@ import {
 import type { Agent } from "@paperclipai/shared";
 
 const AGENT_SORT_CHOICES: SidebarSectionRadioChoice[] = [
-  { value: "top", label: "Top" },
-  { value: "alphabetical", label: "Alphabetical" },
-  { value: "recent", label: "Recent" },
+  { value: "top", label: t("components.SidebarAgents.top") },
+  { value: "alphabetical", label: t("components.SidebarAgents.alphabetical") },
+  { value: "recent", label: t("components.SidebarAgents.recent") },
 ];
 
 function agentTimestamp(agent: Agent, field: "lastHeartbeatAt" | "updatedAt" | "createdAt"): number {
@@ -108,12 +109,12 @@ function SidebarAgentItem({
   const isActive = activeAgentId === routeRef;
   const isPaused = agent.status === "paused";
   const isBudgetPaused = isPaused && agent.pauseReason === "budget";
-  const pauseResumeLabel = isPaused ? "Resume agent" : "Pause agent";
+  const pauseResumeLabel = isPaused ? t("components.SidebarAgents.resumeAgent") : t("components.SidebarAgents.pauseAgent");
   const pauseResumeDisabled = disabled || agent.status === "pending_approval" || isBudgetPaused;
   const pauseResumeDisabledLabel = disabled
-    ? "Updating..."
+    ? t("components.SidebarAgents.updating")
     : isBudgetPaused
-      ? "Budget paused"
+      ? t("components.SidebarAgents.budgetPaused")
       : pauseResumeLabel;
 
   return (
@@ -136,7 +137,7 @@ function SidebarAgentItem({
         {(agent.pauseReason === "budget" || runCount > 0) && (
           <span className="ml-auto flex items-center gap-1.5 shrink-0">
             {agent.pauseReason === "budget" ? (
-              <BudgetSidebarMarker title="Agent paused by budget" />
+              <BudgetSidebarMarker title={t("components.SidebarAgents.pausedByBudget")} />
             ) : null}
             {runCount > 0 ? (
               <span className="relative flex h-2 w-2">
@@ -188,7 +189,7 @@ function SidebarAgentItem({
               onPauseResume(agent, isPaused ? "resume" : "pause");
             }}
             disabled={pauseResumeDisabled}
-            title={isBudgetPaused ? "Agent was paused by budget limits" : undefined}
+            title={isBudgetPaused ? t("components.SidebarAgents.pausedByBudgetLimits") : undefined}
           >
             {isPaused ? <PlayCircle className="size-4" /> : <PauseCircle className="size-4" />}
             <span>{pauseResumeDisabledLabel}</span>

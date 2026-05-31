@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Tooltip,
@@ -20,14 +21,14 @@ import { AGENT_ROLE_LABELS } from "@paperclipai/shared";
 
 /* ---- Help text for (?) tooltips ---- */
 export const help: Record<string, string> = {
-  name: "Display name for this agent.",
-  title: "Job title shown in the org chart.",
-  role: "Organizational role. Determines position and capabilities.",
-  reportsTo: "The agent this one reports to in the org hierarchy.",
-  capabilities: "Describes what this agent can do. Shown in the org chart and used for task routing.",
-  adapterType: "How this agent runs: local CLI (Claude/Codex/OpenCode), OpenClaw Gateway, spawned process, or generic HTTP webhook.",
-  cwd: "Deprecated legacy working directory fallback for local adapters. Existing agents may still carry this value, but new configurations should use project workspaces instead.",
-  promptTemplate: "Sent on every heartbeat. Keep this small and dynamic. Use it for current-task framing, not large static instructions. Supports {{ agent.id }}, {{ agent.name }}, {{ agent.role }} and other template variables.",
+  name: t("components.agentConfig.displayNameDesc"),
+  title: t("components.agentConfig.titleDesc"),
+  role: t("components.agentConfig.roleDesc"),
+  reportsTo: t("components.agentConfig.reportsToDesc"),
+  capabilities: t("components.agentConfig.capabilitiesDesc"),
+  adapterType: t("components.agentConfig.adapterTypeDesc"),
+  cwd: t("components.agentConfig.cwdDesc"),
+  promptTemplate: t("components.agentConfig.promptTemplateDesc"),
   model: "Override the default model used by the adapter.",
   thinkingEffort: "Control model reasoning depth. Supported values vary by adapter/model.",
   chrome: "Enable Claude's Chrome integration by passing --chrome.",
@@ -70,7 +71,8 @@ export const roleLabels = AGENT_ROLE_LABELS as Record<string, string>;
 
 /* ---- Primitive components ---- */
 
-export function HintIcon({ text }: { text: string }) {
+export function HintIcon({
+  const { t } = useTranslation(); text }: { text: string }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>

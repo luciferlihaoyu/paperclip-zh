@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   WORKSPACE_BRANCH_ROUTINE_VARIABLE,
@@ -179,6 +180,7 @@ export interface RoutineRunDialogSubmitData {
 }
 
 export function RoutineRunVariablesDialog({
+  const { t } = useTranslation();
   open,
   onOpenChange,
   companyId,
@@ -354,10 +356,10 @@ export function RoutineRunVariablesDialog({
                 value={selection.assigneeAgentId}
                 options={assigneeOptions}
                 recentOptionIds={recentAssigneeIds}
-                placeholder="Agent"
-                noneLabel="Select an agent"
-                searchPlaceholder="Search agents..."
-                emptyMessage="No agents found."
+                placeholder={t("components.RoutineRunVariablesDialog.agent")}
+                noneLabel={t("components.RoutineRunVariablesDialog.selectAgent")}
+                searchPlaceholder={t("components.RoutineRunVariablesDialog.searchAgents")}
+                emptyMessage={t("components.RoutineRunVariablesDialog.noAgents")}
                 disablePortal
                 openOnFocus={false}
                 onChange={(assigneeAgentId) => {
@@ -396,10 +398,10 @@ export function RoutineRunVariablesDialog({
                 value={selection.projectId}
                 options={projectOptions}
                 recentOptionIds={recentProjectIds}
-                placeholder="Project"
-                noneLabel="No project"
-                searchPlaceholder="Search projects..."
-                emptyMessage="No projects found."
+                placeholder={t("components.RoutineRunVariablesDialog.project")}
+                noneLabel={t("components.RoutineRunVariablesDialog.noProject")}
+                searchPlaceholder={t("components.RoutineRunVariablesDialog.searchProjects")}
+                emptyMessage={t("components.RoutineRunVariablesDialog.noProjects")}
                 disablePortal
                 openOnFocus={false}
                 onChange={(projectId) => {

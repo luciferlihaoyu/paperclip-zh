@@ -31,6 +31,7 @@ import { agentsApi } from "../api/agents";
 import { projectsApi } from "../api/projects";
 import { accessApi } from "../api/access";
 import { useCompany } from "../context/CompanyContext";
+import { useTranslation } from "@/i18n";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useToastActions } from "../context/ToastContext";
 import { queryKeys } from "../lib/queryKeys";
@@ -80,19 +81,19 @@ const triggerKinds = ["schedule", "webhook"];
 const signingModes = ["bearer", "hmac_sha256", "github_hmac", "none"];
 const routineTabs = ["triggers", "runs", "activity", "secrets", "history"] as const;
 const concurrencyPolicyDescriptions: Record<string, string> = {
-  coalesce_if_active: "Keep one follow-up run queued while an active run is still working.",
-  always_enqueue: "Queue every trigger occurrence, even if several runs stack up.",
-  skip_if_active: "Drop overlapping trigger occurrences while the routine is already active.",
+  coalesce_if_active: t("routines.concurrency.coalesceIfActiveDesc"),
+  always_enqueue: t("routines.concurrency.alwaysEnqueueDesc"),
+  skip_if_active: t("routines.concurrency.skipIfActiveDesc"),
 };
 const catchUpPolicyDescriptions: Record<string, string> = {
-  skip_missed: "Ignore schedule windows that were missed while the routine or scheduler was paused.",
-  enqueue_missed_with_cap: "Catch up missed schedule windows in capped batches after recovery.",
+  skip_missed: t("routines.catchUp.skipMissedDesc"),
+  enqueue_missed_with_cap: t("routines.catchUp.enqueueMissedWithCapDesc"),
 };
 const signingModeDescriptions: Record<string, string> = {
-  bearer: "Expect a shared bearer token in the Authorization header.",
-  hmac_sha256: "Expect an HMAC SHA-256 signature over the request using the shared secret.",
-  github_hmac: "Accept GitHub-style X-Hub-Signature-256 header (HMAC over raw body, no timestamp).",
-  none: "No authentication — the webhook URL itself acts as a shared secret.",
+  bearer: t("routineDetail.signingMode.bearer"),
+  hmac_sha256: t("routineDetail.signingMode.hmacSha256"),
+  github_hmac: t("routineDetail.signingMode.githubHmac"),
+  none: t("routineDetail.signingMode.none"),
 };
 const SIGNING_MODES_WITHOUT_REPLAY_WINDOW = new Set(["github_hmac", "none"]);
 
@@ -199,8 +200,8 @@ function TriggerEditor({
           {trigger.kind === "schedule" && trigger.nextRunAt
             ? `Next: ${new Date(trigger.nextRunAt).toLocaleString()}`
             : trigger.kind === "webhook"
-              ? "Webhook"
-              : "API"}
+              ? t("routineDetail.triggers.webhook")
+              : t("routineDetail.triggers.api")}
         </span>
       </div>
 
@@ -258,7 +259,7 @@ function TriggerEditor({
           {trigger.kind === "webhook" && (
             <Button variant="outline" size="sm" onClick={() => onRotate(trigger.id)}>
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-              Rotate secret
+              {t("routineDetail.triggers.rotateSecret")}
             </Button>
           )}
           <Button
@@ -267,7 +268,7 @@ function TriggerEditor({
             onClick={() => onSave(trigger.id, buildRoutineTriggerPatch(trigger, draft, getLocalTimezone()))}
           >
             <Save className="mr-1.5 h-3.5 w-3.5" />
-            Save trigger
+            {t("routineDetail.triggers.saveTrigger")}
           </Button>
           <Button
             variant="ghost"
@@ -286,6 +287,7 @@ function TriggerEditor({
 export function RoutineDetail() {
   const { routineId } = useParams<{ routineId: string }>();
   const { selectedCompanyId } = useCompany();
+  const { t } = useTranslation();
   const { setBreadcrumbs } = useBreadcrumbs();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -446,7 +448,7 @@ export function RoutineDetail() {
 
   useEffect(() => {
     if (!routine) return;
-    setBreadcrumbs([{ label: "Routines", href: "/routines" }, { label: routine.title }]);
+    setBreadcrumbs([{ label: t("routineDetail.breadcrumb.routines"), href: "/routines" }, { label: routine.title }]);
     if (!routineDefaults) return;
 
     const changedRoutine = hydratedRoutineIdRef.current !== routine.id;
@@ -463,10 +465,10 @@ export function RoutineDetail() {
   const copySecretValue = async (label: string, value: string) => {
     try {
       await navigator.clipboard.writeText(value);
-      pushToast({ title: `${label} copied`, tone: "success" });
+      pushToast({ title: `${label} ${t("routineDetail.toasts.copied")}`, tone: "success" });
     } catch (error) {
       pushToast({
-        title: `Failed to copy ${label.toLowerCase()}`,
+        title: t("routineDetail.toasts.copyFailed"),
         body: error instanceof Error ? error.message : "Clipboard access was denied.",
         tone: "error",
       });
@@ -513,14 +515,14 @@ export function RoutineDetail() {
       if (error instanceof ApiError && error.status === 409) {
         setSaveConflict(true);
         pushToast({
-          title: "Routine changed",
-          body: "Someone else updated this routine. Reload to see the latest revision.",
+          title: t("routineDetail.save.conflict.failed"),
+          body: t("routineDetail.save.conflict.failedBody"),
           tone: "warn",
         });
         return;
       }
       pushToast({
-        title: "Failed to save routine",
+        title: t("routineDetail.toasts.saveFailed"),
         body: error instanceof Error ? error.message : "Paperclip could not save the routine.",
         tone: "error",
       });
@@ -542,7 +544,7 @@ export function RoutineDetail() {
           : {}),
       }),
     onSuccess: async () => {
-      pushToast({ title: "Routine run started", tone: "success" });
+      pushToast({ title: t("routineDetail.toasts.runStarted"), tone: "success" });
       setRunVariablesOpen(false);
       setActiveTab("runs");
       await Promise.all([
@@ -554,7 +556,7 @@ export function RoutineDetail() {
     },
     onError: (error) => {
       pushToast({
-        title: "Routine run failed",
+        title: t("routineDetail.toasts.runFailed"),
         body: error instanceof Error ? error.message : "Paperclip could not start the routine run.",
         tone: "error",
       });
@@ -565,7 +567,7 @@ export function RoutineDetail() {
     mutationFn: (status: string) => routinesApi.update(routineId!, { status }),
     onSuccess: async (_data, status) => {
       pushToast({
-        title: "Routine saved",
+        title: t("routineDetail.toasts.routineSaved"),
         body: status === "paused" ? "Automation paused." : "Automation enabled.",
         tone: "success",
       });
@@ -576,7 +578,7 @@ export function RoutineDetail() {
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to update routine",
+        title: t("routineDetail.toasts.updateFailed"),
         body: error instanceof Error ? error.message : "Paperclip could not update the routine.",
         tone: "error",
       });
@@ -604,7 +606,7 @@ export function RoutineDetail() {
     onSuccess: async (result) => {
       if (result.secretMaterial) {
         setSecretMessage({
-          title: "Webhook trigger created",
+          title: t("routineDetail.secretMessage.created"),
           entries: [{
             webhookUrl: result.secretMaterial.webhookUrl,
             webhookSecret: result.secretMaterial.webhookSecret,
@@ -612,8 +614,8 @@ export function RoutineDetail() {
         });
       } else {
         pushToast({
-          title: "Trigger added",
-          body: "The routine schedule was saved.",
+          title: t("routineDetail.toasts.triggerAdded"),
+          body: t("routineDetail.toasts.triggerAddedBody"),
           tone: "success",
         });
       }
@@ -636,8 +638,8 @@ export function RoutineDetail() {
     mutationFn: ({ id, patch }: { id: string; patch: Record<string, unknown> }) => routinesApi.updateTrigger(id, patch),
     onSuccess: async () => {
       pushToast({
-        title: "Trigger saved",
-        body: "The routine cadence update was saved.",
+        title: t("routineDetail.toasts.triggerSaved"),
+        body: t("routineDetail.toasts.triggerSavedBody"),
         tone: "success",
       });
       await Promise.all([
@@ -648,7 +650,7 @@ export function RoutineDetail() {
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to update trigger",
+        title: t("routineDetail.toasts.triggerUpdateFailed"),
         body: error instanceof Error ? error.message : "Paperclip could not update the trigger.",
         tone: "error",
       });
@@ -659,7 +661,7 @@ export function RoutineDetail() {
     mutationFn: (id: string) => routinesApi.deleteTrigger(id),
     onSuccess: async () => {
       pushToast({
-        title: "Trigger deleted",
+        title: t("routineDetail.toasts.triggerDeleted"),
         tone: "success",
       });
       await Promise.all([
@@ -670,7 +672,7 @@ export function RoutineDetail() {
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to delete trigger",
+        title: t("routineDetail.toasts.triggerDeleteFailed"),
         body: error instanceof Error ? error.message : "Paperclip could not delete the trigger.",
         tone: "error",
       });
@@ -681,7 +683,7 @@ export function RoutineDetail() {
     mutationFn: (id: string): Promise<RotateRoutineTriggerResponse> => routinesApi.rotateTriggerSecret(id),
     onSuccess: async (result) => {
       setSecretMessage({
-        title: "Webhook secret rotated",
+        title: t("routineDetail.secretMessage.rotated"),
         entries: [{
           webhookUrl: result.secretMaterial.webhookUrl,
           webhookSecret: result.secretMaterial.webhookSecret,
@@ -694,7 +696,7 @@ export function RoutineDetail() {
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to rotate webhook secret",
+        title: t("routineDetail.toasts.rotateFailed"),
         body: error instanceof Error ? error.message : "Paperclip could not rotate the webhook secret.",
         tone: "error",
       });
@@ -753,7 +755,7 @@ export function RoutineDetail() {
   if (error || !routine) {
     return (
       <p className="pt-6 text-sm text-destructive">
-        {error instanceof Error ? error.message : "Routine not found"}
+        {error instanceof Error ? error.message : t("routineDetail.errors.notFound")}
       </p>
     );
   }
@@ -762,12 +764,12 @@ export function RoutineDetail() {
   const selectedProject = routine.projectId ? (projects?.find((project) => project.id === routine.projectId) ?? null) : null;
   const automationToggleDisabled = updateRoutineStatus.isPending || routine.status === "archived";
   const automationLabel = routine.status === "archived"
-    ? "Archived"
+    ? t("routineDetail.status.archived")
     : !routine.assigneeAgentId
-      ? "Draft"
+      ? t("routineDetail.status.draft")
       : automationEnabled
-        ? "Active"
-        : "Paused";
+        ? t("routineDetail.status.active")
+        : t("routineDetail.status.paused");
   const automationLabelClassName = routine.status === "archived"
     ? "text-muted-foreground"
     : automationEnabled
@@ -782,7 +784,7 @@ export function RoutineDetail() {
           <textarea
             ref={titleInputRef}
             className="w-full resize-none overflow-hidden bg-transparent text-xl font-bold outline-none placeholder:text-muted-foreground/50"
-            placeholder="Routine title"
+            placeholder={t("routineDetail.titlePlaceholder")}
             rows={1}
             value={editDraft.title}
             onChange={(event) => {
@@ -811,7 +813,7 @@ export function RoutineDetail() {
           />
           {routine.managedByPlugin ? (
             <Badge variant="outline" className="gap-1 text-xs text-muted-foreground">
-              Managed by {routine.managedByPlugin.pluginDisplayName}
+              {t("routineDetail.managedBy.managedBy")} {routine.managedByPlugin.pluginDisplayName}
               <span className="font-mono text-[10px]">{routine.managedByPlugin.resourceKey}</span>
             </Badge>
           ) : null}
@@ -829,8 +831,8 @@ export function RoutineDetail() {
             onCheckedChange={() => {
               if (!automationEnabled && !routine.assigneeAgentId) {
                 pushToast({
-                  title: "Default agent required",
-                  body: "Set a default agent before enabling routine automation.",
+                  title: t("routineDetail.toasts.defaultAgentRequired"),
+                  body: t("routineDetail.toasts.defaultAgentRequiredBody"),
                   tone: "warn",
                 });
                 return;
@@ -838,7 +840,7 @@ export function RoutineDetail() {
               updateRoutineStatus.mutate(automationEnabled ? "paused" : "active");
             }}
             disabled={automationToggleDisabled}
-            aria-label={automationEnabled ? "Pause automatic triggers" : "Enable automatic triggers"}
+            aria-label={automationEnabled ? t("routineDetail.actions.ariaLabel.pause") : t("routineDetail.actions.ariaLabel.enable")}
           />
           <span className={`min-w-[3.75rem] text-sm font-medium ${automationLabelClassName}`}>
             {automationLabel}
@@ -913,7 +915,7 @@ export function RoutineDetail() {
 
       {!routine.assigneeAgentId ? (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm text-amber-900 dark:text-amber-200">
-          Default agent required. This routine can stay as a draft and still run manually, but automation stays paused until you assign a default agent.
+          {t("routineDetail.status.draftWarning")}
         </div>
       ) : null}
 
@@ -1016,7 +1018,7 @@ export function RoutineDetail() {
         ref={descriptionEditorRef}
         value={editDraft.description}
         onChange={(description) => setEditDraft((current) => ({ ...current, description }))}
-        placeholder="Add instructions..."
+        placeholder=t("routineDetail.sections.descriptionPlaceholder")
         bordered={false}
         contentClassName="min-h-[120px] text-[15px] leading-7"
         mentions={mentionOptions}
@@ -1180,7 +1182,7 @@ export function RoutineDetail() {
             </div>
             <div className="flex items-center justify-end">
               <Button size="sm" onClick={() => createTrigger.mutate()} disabled={createTrigger.isPending}>
-                {createTrigger.isPending ? "Adding..." : "Add trigger"}
+                {createTrigger.isPending ? t("routineDetail.triggers.adding") : t("routineDetail.triggers.addTrigger")}
               </Button>
             </div>
           </div>
@@ -1300,8 +1302,8 @@ export function RoutineDetail() {
               if (response.secretMaterials.length > 0) {
                 setSecretMessage({
                   title: response.secretMaterials.length === 1
-                    ? "Webhook trigger restored"
-                    : `${response.secretMaterials.length} webhook triggers restored`,
+                    ? t("routineDetail.history.webhookTriggerRestored")
+                    : `${response.secretMaterials.length} ${t("routineDetail.history.webhookTriggersRestored")}`,
                   entries: response.secretMaterials.map((recreated) => ({
                     webhookUrl: recreated.webhookUrl,
                     webhookSecret: recreated.webhookSecret,

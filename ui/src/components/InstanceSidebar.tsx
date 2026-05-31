@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "@/i18n";
 import { Clock3, Cpu, FlaskConical, Puzzle, Settings, Shield, SlidersHorizontal, UserRoundPen } from "lucide-react";
 import type { PluginRecord } from "@paperclipai/shared";
 import { NavLink } from "@/lib/router";
@@ -38,12 +39,12 @@ export function InstanceSidebar() {
 
       <nav className="flex-1 min-h-0 overflow-y-auto scrollbar-auto-hide flex flex-col gap-4 px-3 py-2">
         <div className="flex flex-col gap-0.5">
-          <SidebarNavItem to="/instance/settings/profile" label="Profile" icon={UserRoundPen} end />
-          <SidebarNavItem to="/instance/settings/general" label="General" icon={SlidersHorizontal} end />
-          <SidebarNavItem to="/instance/settings/access" label="Access" icon={Shield} end />
-          <SidebarNavItem to="/instance/settings/heartbeats" label="Heartbeats" icon={Clock3} end />
-          <SidebarNavItem to="/instance/settings/experimental" label="Experimental" icon={FlaskConical} />
-          <SidebarNavItem to="/instance/settings/plugins" label="Plugins" icon={Puzzle} />
+          <SidebarNavItem to="/instance/settings/profile" label={t("components.instanceSidebar.profile")} icon={UserRoundPen} end />
+          <SidebarNavItem to="/instance/settings/general" label={t("components.instanceSidebar.general")} icon={SlidersHorizontal} end />
+          <SidebarNavItem to="/instance/settings/access" label={t("components.instanceSidebar.access")} icon={Shield} end />
+          <SidebarNavItem to="/instance/settings/heartbeats" label={t("components.instanceSidebar.heartbeats")} icon={Clock3} end />
+          <SidebarNavItem to="/instance/settings/experimental" label={t("components.instanceSidebar.experimental")} icon={FlaskConical} />
+          <SidebarNavItem to="/instance/settings/plugins" label={t("components.instanceSidebar.plugins")} icon={Puzzle} />
           {sidebarPlugins.length > 0 ? (
             <div className="ml-4 mt-1 flex flex-col gap-0.5 border-l border-border/70 pl-3">
               {sidebarPlugins.map((plugin) => (
@@ -65,7 +66,7 @@ export function InstanceSidebar() {
               ))}
             </div>
           ) : null}
-          <SidebarNavItem to="/instance/settings/adapters" label="Adapters" icon={Cpu} />
+          <SidebarNavItem to="/instance/settings/adapters" label={t("components.instanceSidebar.adapters")} icon={Cpu} />
         </div>
       </nav>
     </aside>

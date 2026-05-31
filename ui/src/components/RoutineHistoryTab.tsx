@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { History as HistoryIcon, RotateCcw, Search } from "lucide-react";
@@ -59,6 +60,7 @@ type Props = {
 };
 
 export function RoutineHistoryTab({
+  const { t } = useTranslation();
   routine,
   isEditDirty,
   dirtyFields,
@@ -125,8 +127,8 @@ export function RoutineHistoryTab({
       pushToast({
         title: `Restored revision ${restoredFromNumber} as revision ${newNumber}`,
         body: data.secretMaterials.length > 0
-          ? "Trigger enabled state was restored from the snapshot. New webhook secrets are available in the banner above."
-          : "Trigger enabled state was restored from the snapshot.",
+          ? t("components.RoutineHistoryTab.triggerRestored")
+          : t("components.RoutineHistoryTab.triggerRestoredSimple"),
         tone: "success",
       });
       onRestoreSecretMaterials(data);
@@ -152,8 +154,8 @@ export function RoutineHistoryTab({
     },
     onError: (error) => {
       pushToast({
-        title: "Failed to restore revision",
-        body: error instanceof Error ? error.message : "Paperclip could not restore the revision.",
+        title: t("components.RoutineHistoryTab.failedToRestore"),
+        body: error instanceof Error ? error.message : t("components.RoutineHistoryTab.couldNotRestore"),
         tone: "error",
       });
     },
@@ -203,7 +205,7 @@ export function RoutineHistoryTab({
           <p className="text-xs text-muted-foreground">
             {revisionsQuery.error instanceof Error
               ? revisionsQuery.error.message
-              : "Unknown error loading revisions."}
+              : t("components.RoutineHistoryTab.unknownError")}
           </p>
         </div>
         <Button size="sm" variant="outline" onClick={() => revisionsQuery.refetch()}>
@@ -240,7 +242,7 @@ export function RoutineHistoryTab({
           <div className="space-y-2">
             <EmptyState
               icon={HistoryIcon}
-              message="No edits yet"
+              message={t("components.RoutineHistoryTab.noEdits")}
             />
             <p className="text-center text-xs text-muted-foreground">
               Revision 1 is the only history this routine has. Saving an edit creates the first
@@ -522,7 +524,7 @@ function RevisionPreview({
   const fieldRows: Array<{ key: string; label: string; value: string; differs: boolean }> = [
     {
       key: "title",
-      label: "Title",
+      label: t("components.RoutineHistoryTab.title"),
       value: snapshot.title,
       differs: !!currentSnapshot && currentSnapshot.title !== snapshot.title,
     },

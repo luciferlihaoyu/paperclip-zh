@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { useState } from "react";
 import { Apple, Monitor, Terminal } from "lucide-react";
 import {
@@ -13,16 +14,16 @@ type Platform = "mac" | "windows" | "linux";
 
 const platforms: { id: Platform; label: string; icon: typeof Apple }[] = [
   { id: "mac", label: "macOS", icon: Apple },
-  { id: "windows", label: "Windows", icon: Monitor },
-  { id: "linux", label: "Linux", icon: Terminal },
+  { id: "windows", label: t("components.PathInstructionsModal.windows"), icon: Monitor },
+  { id: "linux", label: t("components.PathInstructionsModal.linux"), icon: Terminal },
 ];
 
 const instructions: Record<Platform, { steps: string[]; tip?: string }> = {
   mac: {
     steps: [
-      "Open Finder and navigate to the folder.",
-      "Right-click (or Control-click) the folder.",
-      "Hold the Option (⌥) key — \"Copy\" changes to \"Copy as Pathname\".",
+      t("components.PathInstructionsModal.openFinder"),
+      t("components.PathInstructionsModal.rightClick"),
+      t("components.PathInstructionsModal.holdOption"),
       "Click \"Copy as Pathname\", then paste here.",
     ],
     tip: "You can also open Terminal, type cd, drag the folder into the terminal window, and press Enter. Then type pwd to see the full path.",
@@ -58,6 +59,7 @@ interface PathInstructionsModalProps {
 }
 
 export function PathInstructionsModal({
+  const { t } = useTranslation();
   open,
   onOpenChange,
 }: PathInstructionsModalProps) {
